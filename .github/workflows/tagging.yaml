@@ -1,0 +1,54 @@
+name: Auto Version & Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  version-and-tag:
+    runs-on: ubuntu-latest
+    environment: auto-versioning
+    steps:
+      # 1. Checkout
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false # important to disable default GITHUB_TOKEN
+          token: ${{ secrets.PAT_TOKEN }}
+
+      # 2. Setup Node
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # 3. Install pnpm
+      - run: npm install -g pnpm
+
+      # 4. Install dependencies
+      - run: pnpm install
+
+      # 5. Check if there are pending changesets
+      - name: Check for changesets
+        id: changeset
+        run: |
+          PENDING=$(find ./.changeset -maxdepth 1 -regex "./.changeset/.*" ! -regex ".*config.json" ! -regex ".*README.md" | wc -l)
+          echo "PENDING=$PENDING" >> $GITHUB_ENV
+          echo "pending changesets: $PENDING"
+
+      - name: Run version if changesets exist
+        if: env.PENDING != '0'
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          pnpm changeset version
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: version bump from changesets [skip ci]" || echo "No changes to commit"
+          NEW_TAG=$(node -p "require('./package.json').version")
+          git tag "v$NEW_TAG"
+          # Configure Git to use PAT for HTTPS
+          git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/NilsGke/version-architecture-test.git
+          git push origin main
+          git push --tags
