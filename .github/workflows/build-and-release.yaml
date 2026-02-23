@@ -62,4 +62,4 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: .
           vercel-args: "--confirm --prod"
-          alias-domains: "v${{ env.MAJOR }}.version-architecture-test.nilsgke.dev"
+          alias-domains: "v${{ env.MAJOR }}.jeopardy.nilsgke.dev"

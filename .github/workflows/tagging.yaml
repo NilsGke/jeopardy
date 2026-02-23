@@ -49,6 +49,6 @@ jobs:
           NEW_TAG=$(node -p "require('./package.json').version")
           git tag "v$NEW_TAG"
           # Configure Git to use PAT for HTTPS
-          git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/NilsGke/version-architecture-test.git
+          git remote set-url origin https://x-access-token:${PAT_TOKEN}@github.com/NilsGke/jeopardy.git
           git push origin main
           git push --tags
