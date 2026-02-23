@@ -10,33 +10,51 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DirDirIdRouteImport } from './routes/dir/$dirId'
+import { Route as DirDirIdIndexRouteImport } from './routes/dir/$dirId.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DirDirIdRoute = DirDirIdRouteImport.update({
+  id: '/dir/$dirId',
+  path: '/dir/$dirId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DirDirIdIndexRoute = DirDirIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DirDirIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dir/$dirId': typeof DirDirIdRouteWithChildren
+  '/dir/$dirId/': typeof DirDirIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dir/$dirId': typeof DirDirIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dir/$dirId': typeof DirDirIdRouteWithChildren
+  '/dir/$dirId/': typeof DirDirIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/dir/$dirId' | '/dir/$dirId/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/dir/$dirId'
+  id: '__root__' | '/' | '/dir/$dirId' | '/dir/$dirId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DirDirIdRoute: typeof DirDirIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +66,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dir/$dirId': {
+      id: '/dir/$dirId'
+      path: '/dir/$dirId'
+      fullPath: '/dir/$dirId'
+      preLoaderRoute: typeof DirDirIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dir/$dirId/': {
+      id: '/dir/$dirId/'
+      path: '/'
+      fullPath: '/dir/$dirId/'
+      preLoaderRoute: typeof DirDirIdIndexRouteImport
+      parentRoute: typeof DirDirIdRoute
+    }
   }
 }
 
+interface DirDirIdRouteChildren {
+  DirDirIdIndexRoute: typeof DirDirIdIndexRoute
+}
+
+const DirDirIdRouteChildren: DirDirIdRouteChildren = {
+  DirDirIdIndexRoute: DirDirIdIndexRoute,
+}
+
+const DirDirIdRouteWithChildren = DirDirIdRoute._addFileChildren(
+  DirDirIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DirDirIdRoute: DirDirIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

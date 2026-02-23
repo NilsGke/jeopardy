@@ -12,8 +12,8 @@ class IndexedDB extends Dexie {
   }
 }
 
-interface JeopardyDirectory {
-  id: string;
+export interface JeopardyDirectory {
+  id: number;
   lastUsed: Date;
   handle: FileSystemDirectoryHandle;
 }
