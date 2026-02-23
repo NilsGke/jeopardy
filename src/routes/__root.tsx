@@ -4,6 +4,7 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import "../styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/sonner";
+import NewVersionInfo from "@/components/NewVersionInfo";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -16,6 +17,7 @@ function RootComponent() {
     <>
       <QueryClientProvider client={queryClient}>
         <Toaster />
+        <NewVersionInfo />
         <div className="m-6">
           <Outlet />
         </div>
