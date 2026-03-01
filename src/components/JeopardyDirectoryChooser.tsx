@@ -1,15 +1,22 @@
 import { db, type JeopardyDirectory } from "@/indexedDB/db";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowRight02Icon, Directory } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight02Icon,
+  Directory,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Item, ItemActions, ItemContent, ItemMedia } from "./ui/item";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function DirectoryChooser() {
+  const navigate = useNavigate({ from: "/dir/$dirId" });
+
   const { data: recentDirectories, refetch } = useQuery({
     queryKey: [],
     queryFn: async () =>
@@ -46,7 +53,8 @@ export default function DirectoryChooser() {
     });
 
     const directory = await prom;
-    refetch();
+    navigate({ params: { dirId: directory.id.toString() } });
+    // refetch();
   };
 
   const removeDirectory = async (dir: JeopardyDirectory) => {
@@ -68,13 +76,30 @@ export default function DirectoryChooser() {
     <div>
       <Card>
         <CardHeader>
-          <h2 className="text-3xl font-bold">Choose your Jeopardy-Directory</h2>
+          <div className="flex gap-4">
+            <h2 className="text-3xl font-bold">
+              Choose your Jeopardy-Directory
+            </h2>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <HugeiconsIcon icon={InformationCircleIcon} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div>
+                  Your jeopardy Data is stored on your device so you need to
+                  select a directory where that data will live.
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </CardHeader>
-        <CardContent ref={directoryListRef}>
+        <CardContent ref={directoryListRef} className="space-y-3">
           {recentDirectories &&
             recentDirectories.length > 0 &&
             recentDirectories.map((entry) => (
-              <Item variant="outline">
+              <Item key={entry.id} variant="outline">
                 <ItemMedia>
                   <HugeiconsIcon icon={Directory} />
                 </ItemMedia>
@@ -103,7 +128,7 @@ export default function DirectoryChooser() {
                 </ItemActions>
               </Item>
             ))}
-          <Button className="mt-4" onClick={uploadDirectory}>
+          <Button onClick={uploadDirectory}>
             Select new Jeopardy Directory <HugeiconsIcon icon={Directory} />
           </Button>
         </CardContent>

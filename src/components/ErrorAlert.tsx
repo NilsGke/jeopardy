@@ -11,7 +11,9 @@ export default function ErrorAlert({
 }: {
   title: string;
   description: string;
-  action: { text: string; href: string };
+  action:
+    | { text: string; href: string; type: "link" }
+    | { text: string; fnc: () => void; type: "function" };
 }) {
   return (
     <div>
@@ -20,9 +22,16 @@ export default function ErrorAlert({
         <AlertTitle>{title}</AlertTitle>
         <AlertDescription>{description}</AlertDescription>
         <AlertAction>
-          <Button variant="outline" asChild>
-            <Link to={action.href}>{action.text}</Link>
-          </Button>
+          {action.type === "link" && (
+            <Button variant="outline" asChild>
+              <Link to={action.href}>{action.text}</Link>
+            </Button>
+          )}
+          {action.type === "function" && (
+            <Button variant="outline" onClick={action.fnc}>
+              {action.text}
+            </Button>
+          )}
         </AlertAction>
       </Alert>
     </div>
