@@ -1,0 +1,26 @@
+name: Require Changeset
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  require-changeset:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for real changeset files
+        run: |
+          # Get list of .changeset/*.md files excluding config.json and README.md
+          FILES=$(git diff --name-only origin/main...HEAD | grep '^.changeset/.*\.md$' | grep -vE 'config\.json|README\.md')
+
+          if [ -z "$FILES" ]; then
+            echo "❌ No changeset file found! You need to add a .changeset/*.md (not config.json or README.md)."
+            exit 1
+          else
+            echo "✅ Found changeset file(s):"
+            echo "$FILES"
+          fi
