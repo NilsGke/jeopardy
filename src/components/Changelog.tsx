@@ -1,4 +1,3 @@
-import { Card, CardContent } from "./ui/card";
 // @ts-ignore
 import MDXChangelog from "/CHANGELOG.md";
 import {
@@ -10,19 +9,15 @@ import {
 
 export default function Changelog() {
   return (
-    <Card>
-      <CardContent>
-        <Accordion type="single" collapsible>
-          <AccordionItem value="changelog">
-            <AccordionTrigger>
-              <h2 className="text-xl font-bold">Changelog</h2>
-            </AccordionTrigger>
-            <AccordionContent className="[&_h1]:hidden [&_h2]:text-xl [&_h3]:text-lg text-sm">
-              <MDXChangelog />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </CardContent>
-    </Card>
+    <Accordion type="single" collapsible className="w-md">
+      <AccordionItem value="changelog">
+        <AccordionTrigger className="cursor-pointer">
+          <h2 className="text-xl font-bold">Changelog</h2>
+        </AccordionTrigger>
+        <AccordionContent className="[&_h1]:hidden [&_h2]:text-xl [&_h3]:text-lg text-sm">
+          <MDXChangelog />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }

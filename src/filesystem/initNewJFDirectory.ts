@@ -1,4 +1,4 @@
-import { ROOT_META_DEFAULT_CONTENT, ROOT_META_FILE_NAME } from "./rootMeta";
+import { ROOT_META_DEFAULT_CONTENT, ROOT_META_FILE_NAME } from "./rootMetaFile";
 import { countEntries } from "./utils";
 import { toast } from "sonner";
 

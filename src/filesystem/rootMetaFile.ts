@@ -24,25 +24,26 @@ export const ROOT_META_DEFAULT_CONTENT = jfRootMetaSchema.parse({
 export enum DirectoryState {
   EMPTY,
   NONEMPTY_BUT_NO_META,
-  MAJOR_VERSION_MISMATCH,
+  MAJOR_VERSION_TOO_OLD,
+  MAJOR_VERSION_TOO_NEW,
   INVALID_META,
   VALID,
 }
-
-// TODO: contiune writing getRootMeta and use the above enum as return type
 
 export const getRootMetaFileAndState = async (
   rootDirectoryHandle: FileSystemDirectoryHandle,
 ): Promise<
   | { directoryState: DirectoryState.VALID; data: JFRootMeta }
   | {
-      directoryState: DirectoryState.MAJOR_VERSION_MISMATCH;
+      directoryState:
+        | DirectoryState.MAJOR_VERSION_TOO_OLD
+        | DirectoryState.MAJOR_VERSION_TOO_NEW;
       dirVersion: z.infer<typeof metaVersionSchema>;
     }
   | {
       directoryState: Exclude<
         DirectoryState,
-        DirectoryState.VALID | DirectoryState.MAJOR_VERSION_MISMATCH
+        DirectoryState.VALID | DirectoryState.MAJOR_VERSION_TOO_OLD
       >;
     }
 > => {
@@ -79,9 +80,15 @@ export const getRootMetaFileAndState = async (
       .pick({ version: true })
       .parse({ version: __APP_VERSION__ });
 
-    if (appVersion.major !== dirVersion.major)
+    if (appVersion.major > dirVersion.major)
       return {
-        directoryState: DirectoryState.MAJOR_VERSION_MISMATCH,
+        directoryState: DirectoryState.MAJOR_VERSION_TOO_OLD,
+        dirVersion,
+      };
+    console.log(dirVersion);
+    if (appVersion.major < dirVersion.major)
+      return {
+        directoryState: DirectoryState.MAJOR_VERSION_TOO_NEW,
         dirVersion,
       };
 
