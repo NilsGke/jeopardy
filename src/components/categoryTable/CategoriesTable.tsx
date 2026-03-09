@@ -1,6 +1,7 @@
 import {
   type ColumnDef,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -8,21 +9,29 @@ import {
 import { TableBodyComponent } from "./TableBody";
 import { TableHeaderComponent } from "./TableHeader";
 import { TableFooterComponent } from "./TableFooter";
+import { useState } from "react";
 
 interface CategoriesTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  searchTerm: string;
 }
 
 export function CategoriesTable<TData, TValue>({
   columns,
   data,
+  searchTerm,
 }: CategoriesTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: "includesString",
+    state: {
+      globalFilter: searchTerm,
+    },
   });
 
   return (

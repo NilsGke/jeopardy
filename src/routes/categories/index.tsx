@@ -9,6 +9,7 @@ import { useRootDir } from "@/providers/RootProvider";
 import type { Category } from "@/schemas/category";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/categories/")({
   component: RouteComponent,
@@ -49,6 +50,8 @@ function RouteComponent() {
     },
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   if (!data) return "loading...";
 
   return (
@@ -61,7 +64,12 @@ function RouteComponent() {
         <div className="flex flex-col gap-4">
           <h1 className="text-2xl text-center">Categories</h1>
 
-          <Input type="search" placeholder="Search..." />
+          <Input
+            type="search"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
 
           {data.invalidCategories.length > -1 && (
             <ErrorAlert
@@ -78,7 +86,11 @@ function RouteComponent() {
           )}
         </div>
 
-        <CategoriesTable data={data.validCategories} columns={columns} />
+        <CategoriesTable
+          data={data.validCategories}
+          columns={columns}
+          searchTerm={searchTerm}
+        />
       </div>
     </Section>
   );
