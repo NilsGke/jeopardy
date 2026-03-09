@@ -48,11 +48,12 @@ function generateSortedHeader(
 export const columns = [
   columnHelper.accessor("id", {
     header: generateSortedHeader("Name"),
+    cell: (info) => <div className="whitespace-nowrap">{info.getValue()}</div>,
   }),
   columnHelper.accessor("tags", {
     header: generateSortedHeader("Tags"),
     cell: (info) => (
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2 size-full items-center">
         {info.getValue().map((tag) => (
           <Badge key={tag}>{tag}</Badge>
         ))}

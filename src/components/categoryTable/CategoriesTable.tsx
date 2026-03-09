@@ -1,19 +1,13 @@
 import {
   type ColumnDef,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableBodyComponent } from "./TableBody";
+import { TableHeaderComponent } from "./TableHeader";
+import { TableFooterComponent } from "./TableFooter";
 
 interface CategoriesTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,49 +26,14 @@ export function CategoriesTable<TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+    <div className="h-full max-h-[inherit] min-h-0 max-w-dvw">
+      <div className="relative flex h-full flex-wrap-reverse items-end xl:justify-start justify-center gap-x-5 gap-y-2">
+        <div className="grid h-full max-w-full grid-cols-[1fr_repeat(5,auto)] grid-rows-[auto_1fr_auto] overflow-x-auto rounded-md border lg:max-w-[80%]">
+          <TableHeaderComponent headerGroups={table.getHeaderGroups()} />
+          <TableBodyComponent rows={table.getRowModel().rows} />
+          <TableFooterComponent footerGroups={table.getFooterGroups()} />
+        </div>
+      </div>
     </div>
   );
 }
