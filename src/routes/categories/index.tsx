@@ -2,11 +2,15 @@ import { CategoriesTable } from "@/components/categoryTable/CategoriesTable";
 import { columns } from "@/components/categoryTable/columns";
 import Section from "@/components/categoryTable/Section";
 import ErrorAlert from "@/components/ErrorAlert";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Toggle } from "@/components/ui/toggle";
 import { getAllCategoryIds, getCategory } from "@/filesystem/category";
 import { cn } from "@/lib/utils";
 import { useRootDir } from "@/providers/RootProvider";
 import type { Category } from "@/schemas/category";
+import { UndoIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
@@ -17,6 +21,9 @@ export const Route = createFileRoute("/categories/")({
 
 function RouteComponent() {
   const rootDir = useRootDir();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const { data } = useQuery({
     queryKey: ["categories"],
@@ -38,6 +45,11 @@ function RouteComponent() {
         invalidCategories.forEach((category) => console.error(category));
       }
 
+      const tags = new Set<string>();
+      validCategories.forEach((category) =>
+        category.tags.forEach((tag) => tags.add(tag)),
+      );
+
       return {
         validCategories: validCategories.sort((a, b) =>
           a.id.localeCompare(b.id, undefined, {
@@ -46,11 +58,10 @@ function RouteComponent() {
           }),
         ),
         invalidCategories,
+        tags: [...tags.keys()].sort(),
       };
     },
   });
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   if (!data) return "loading...";
 
@@ -71,7 +82,33 @@ function RouteComponent() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          {data.invalidCategories.length > -1 && (
+          <h2 className="text-lg">Tags:</h2>
+          <div className="flex gap-2 flex-wrap ">
+            {data.tags.map((tag) => (
+              <Toggle
+                size="sm"
+                variant="outline"
+                className="aria-pressed:bg-primary aria-pressed:text-white cursor-pointer"
+                key={tag}
+                pressed={selectedTags.includes(tag)}
+                onPressedChange={(selected) =>
+                  setSelectedTags((prev) =>
+                    selected ? [...prev, tag] : prev.filter((t) => t !== tag),
+                  )
+                }
+              >
+                {tag}
+              </Toggle>
+            ))}
+            {selectedTags.length > 0 && (
+              <Button variant="outline" onClick={() => setSelectedTags([])}>
+                <HugeiconsIcon icon={UndoIcon} />
+                reset
+              </Button>
+            )}
+          </div>
+
+          {data.invalidCategories.length > 0 && (
             <ErrorAlert
               className="mt-auto"
               title={`${data.invalidCategories.length} invalid Categories`}
@@ -90,6 +127,7 @@ function RouteComponent() {
           data={data.validCategories}
           columns={columns}
           searchTerm={searchTerm}
+          selectedTags={selectedTags}
         />
       </div>
     </Section>

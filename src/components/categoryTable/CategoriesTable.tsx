@@ -9,29 +9,35 @@ import {
 import { TableBodyComponent } from "./TableBody";
 import { TableHeaderComponent } from "./TableHeader";
 import { TableFooterComponent } from "./TableFooter";
-import { useState } from "react";
+import { searchAndTagFilter, type FilterValue } from "./filter";
+import { useMemo } from "react";
 
 interface CategoriesTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchTerm: string;
+  selectedTags: string[];
 }
 
 export function CategoriesTable<TData, TValue>({
   columns,
   data,
   searchTerm,
+  selectedTags,
 }: CategoriesTableProps<TData, TValue>) {
+  const globalFilter = useMemo(
+    () => ({ searchTerm, selectedTags }) satisfies FilterValue,
+    [searchTerm, selectedTags],
+  );
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    globalFilterFn: "includesString",
-    state: {
-      globalFilter: searchTerm,
-    },
+    globalFilterFn: searchAndTagFilter,
+    state: { globalFilter },
   });
 
   return (
