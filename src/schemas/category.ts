@@ -8,8 +8,14 @@ const tagSchema = {
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
 };
 
-export const categorySchema = z.object({
-  id: categoryIdSchema,
+export const categoryFileSchema = z.object({
   tags: z.array(tagSchema.name),
   fields: z.array(gameFieldSchema),
 });
+
+export const categorySchema = z.object({
+  ...categoryFileSchema.shape,
+  id: categoryIdSchema,
+});
+
+export type Category = z.infer<typeof categorySchema>;

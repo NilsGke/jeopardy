@@ -85,7 +85,6 @@ export const getRootMetaFileAndState = async (
         directoryState: DirectoryState.MAJOR_VERSION_TOO_OLD,
         dirVersion,
       };
-    console.log(dirVersion);
     if (appVersion.major < dirVersion.major)
       return {
         directoryState: DirectoryState.MAJOR_VERSION_TOO_NEW,

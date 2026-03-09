@@ -20,7 +20,7 @@ function App() {
           <CardHeader></CardHeader>
           <CardContent>
             <div>
-              <Link to="/">Categories</Link>
+              <Link to="/categories">Categories</Link>
               <Link to="/">Boards</Link>
               <Link to="/">Games</Link>
             </div>
