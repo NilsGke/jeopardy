@@ -8,10 +8,30 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   ArrowUpDownIcon,
+  PencilEditIcon,
+  MoreIcon,
+  MoreHorizontalIcon,
+  Delete02Icon,
+  TestTube01Icon,
+  Edit02Icon,
+  Edit03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "../ui/badge";
 import { searchAndTagFilter } from "./filter";
+import { ButtonGroup } from "../ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 const columnHelper = createColumnHelper<Category>();
 
@@ -54,11 +74,42 @@ export const columns = [
   columnHelper.accessor("tags", {
     header: generateSortedHeader("Tags"),
     cell: (info) => (
-      <div className="flex gap-2 size-full items-center">
+      <div className="flex gap-x-2 gap-y-px flex-wrap size-full items-center">
         {info.getValue().map((tag) => (
           <Badge key={tag}>{tag}</Badge>
         ))}
       </div>
+    ),
+  }),
+
+  columnHelper.display({
+    id: "actions",
+    cell: () => (
+      <ButtonGroup>
+        <Button size="icon" variant="outline" title="Edit">
+          <HugeiconsIcon icon={Edit03Icon} />
+        </Button>
+
+        <Button size="icon" variant="outline" title="Test">
+          <HugeiconsIcon icon={TestTube01Icon} />
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="outline" aria-label="More Options">
+              <HugeiconsIcon icon={MoreHorizontalIcon} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-40">
+            <DropdownMenuGroup>
+              <DropdownMenuItem variant="destructive">
+                <HugeiconsIcon icon={Delete02Icon} />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </ButtonGroup>
     ),
   }),
 ];

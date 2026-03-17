@@ -43,7 +43,10 @@ export function CategoriesTable<TData, TValue>({
   return (
     <div className="h-full max-h-[inherit] min-h-0 max-w-dvw">
       <div className="relative flex h-full flex-wrap-reverse items-end xl:justify-start justify-center gap-x-5 gap-y-2">
-        <div className="grid h-full max-w-full grid-cols-[1fr_repeat(5,auto)] grid-rows-[auto_1fr_auto] overflow-x-auto rounded-md border lg:max-w-[80%]">
+        <div
+          className="grid h-full max-w-full grid-rows-[auto_1fr_auto] overflow-x-auto rounded-md border lg:min-w-3xl"
+          style={{ gridTemplateColumns: `repeat(${columns.length}, auto)` }}
+        >
           <TableHeaderComponent headerGroups={table.getHeaderGroups()} />
           <TableBodyComponent rows={table.getRowModel().rows} />
           <TableFooterComponent footerGroups={table.getFooterGroups()} />

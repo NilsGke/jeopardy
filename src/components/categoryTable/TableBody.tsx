@@ -53,7 +53,7 @@ export function TableBodyComponent({
                 {row.getVisibleCells().map((cell) => (
                   <div
                     key={cell.id}
-                    className="flex items-center justify-center border-b px-6"
+                    className="flex items-center border-b px-6"
                     style={{
                       height: `${virtualItem.size}px`,
                     }}
