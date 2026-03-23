@@ -1,5 +1,6 @@
 import { categorySchema } from "@/schemas/category";
 import { assertPermissions } from "./utils";
+import { useQuery } from "@tanstack/react-query";
 
 const CATEGORY_DIR_NAME = "categories";
 const CATEGORY_META_FILE_NAME = "category-meta.json";
@@ -55,4 +56,12 @@ export const getCategory = async (
   const contentObject = JSON.parse(contentString);
   const category = categorySchema.parse({ id: categoryId, ...contentObject });
   return category;
+};
+
+export const deleteCategory = async (
+  categoryId: string,
+  rootDirHandle: FileSystemDirectoryHandle,
+) => {
+  const categoryDir = await getRootCategoryDir(rootDirHandle);
+  await categoryDir.removeEntry(categoryId, { recursive: true });
 };

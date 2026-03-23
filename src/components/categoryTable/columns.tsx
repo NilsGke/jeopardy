@@ -8,30 +8,16 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   ArrowUpDownIcon,
-  PencilEditIcon,
-  MoreIcon,
-  MoreHorizontalIcon,
   Delete02Icon,
   TestTube01Icon,
-  Edit02Icon,
   Edit03Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "../ui/badge";
-import { searchAndTagFilter } from "./filter";
 import { ButtonGroup } from "../ui/button-group";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+import { Link } from "@tanstack/react-router";
+import DeleteCategoryDialog from "../DeleteCategoryDialog";
+import type { CategoriesTableMeta } from "./CategoriesTable";
 
 const columnHelper = createColumnHelper<Category>();
 
@@ -84,32 +70,46 @@ export const columns = [
 
   columnHelper.display({
     id: "actions",
-    cell: () => (
-      <ButtonGroup>
-        <Button size="icon" variant="outline" title="Edit">
-          <HugeiconsIcon icon={Edit03Icon} />
-        </Button>
+    cell: (info) => {
+      const categoryId = info.row
+        .getAllCells()
+        .find((c) => c.column.id === "id")
+        ?.getValue() as Category["id"] | undefined;
 
-        <Button size="icon" variant="outline" title="Test">
-          <HugeiconsIcon icon={TestTube01Icon} />
-        </Button>
+      if (categoryId === undefined) {
+        console.warn("categoryId is undefined, this should never happen");
+        return "?";
+      }
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="outline" aria-label="More Options">
-              <HugeiconsIcon icon={MoreHorizontalIcon} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center" className="w-40">
-            <DropdownMenuGroup>
-              <DropdownMenuItem variant="destructive">
-                <HugeiconsIcon icon={Delete02Icon} />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </ButtonGroup>
-    ),
+      return (
+        <ButtonGroup>
+          <Button size="icon" variant="outline" title="Edit" asChild>
+            <Link
+              to="/categories/$categoryId"
+              params={{ categoryId: info.cell.id }}
+            >
+              <HugeiconsIcon icon={Edit03Icon} />
+            </Link>
+          </Button>
+
+          <Button size="icon" variant="outline" title="Test">
+            <HugeiconsIcon icon={TestTube01Icon} />
+          </Button>
+
+          <Button
+            size="icon"
+            variant="outline"
+            className="hover:text-red-500 hover:bg-red-50"
+            onClick={() =>
+              (
+                info.table.options.meta as CategoriesTableMeta
+              ).showDeleteCategoryPopover(categoryId)
+            }
+          >
+            <HugeiconsIcon icon={Delete02Icon} />
+          </Button>
+        </ButtonGroup>
+      );
+    },
   }),
 ];

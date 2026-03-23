@@ -10,13 +10,18 @@ import { TableBodyComponent } from "./TableBody";
 import { TableHeaderComponent } from "./TableHeader";
 import { TableFooterComponent } from "./TableFooter";
 import { searchAndTagFilter, type FilterValue } from "./filter";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import DeleteCategoryDialog from "../DeleteCategoryDialog";
 
 interface CategoriesTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchTerm: string;
   selectedTags: string[];
+  refreshRows: () => void;
+}
+export interface CategoriesTableMeta {
+  showDeleteCategoryPopover: (categoryId: string) => void;
 }
 
 export function CategoriesTable<TData, TValue>({
@@ -24,7 +29,10 @@ export function CategoriesTable<TData, TValue>({
   data,
   searchTerm,
   selectedTags,
+  refreshRows,
 }: CategoriesTableProps<TData, TValue>) {
+  const [deleteCategoryId, setDeleteCategoryId] = useState<string | null>(null);
+
   const globalFilter = useMemo(
     () => ({ searchTerm, selectedTags }) satisfies FilterValue,
     [searchTerm, selectedTags],
@@ -38,6 +46,10 @@ export function CategoriesTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     globalFilterFn: searchAndTagFilter,
     state: { globalFilter },
+    meta: {
+      showDeleteCategoryPopover: (categoryId) =>
+        setDeleteCategoryId(categoryId),
+    } satisfies CategoriesTableMeta,
   });
 
   return (
@@ -52,6 +64,18 @@ export function CategoriesTable<TData, TValue>({
           <TableFooterComponent footerGroups={table.getFooterGroups()} />
         </div>
       </div>
+
+      {deleteCategoryId !== null && (
+        <DeleteCategoryDialog
+          categoryId={deleteCategoryId}
+          trigger={null}
+          open={true}
+          onOpenChange={() => {
+            refreshRows();
+            setDeleteCategoryId(null);
+          }}
+        />
+      )}
     </div>
   );
 }

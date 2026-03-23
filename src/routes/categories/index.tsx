@@ -25,7 +25,7 @@ function RouteComponent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ["categories"],
     queryFn: async () => {
       if (!rootDir) throw Error("Root dir is null");
@@ -128,6 +128,7 @@ function RouteComponent() {
           columns={columns}
           searchTerm={searchTerm}
           selectedTags={selectedTags}
+          refreshRows={refetch}
         />
       </div>
     </Section>
