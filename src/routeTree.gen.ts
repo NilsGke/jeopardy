@@ -8,80 +8,80 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as CategoriesIndexRouteImport } from './routes/categories/index'
-import { Route as CategoriesCategoryIdRouteImport } from './routes/categories/$categoryId'
+import { Route as rootRouteImport } from "./routes/__root";
+import { Route as IndexRouteImport } from "./routes/index";
+import { Route as CategoriesIndexRouteImport } from "./routes/categories/index";
+import { Route as CategoriesCategoryIdRouteImport } from "./routes/categories/$categoryId";
 
 const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+  id: "/",
+  path: "/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
-  id: '/categories/',
-  path: '/categories/',
+  id: "/categories/",
+  path: "/categories/",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 const CategoriesCategoryIdRoute = CategoriesCategoryIdRouteImport.update({
-  id: '/categories/$categoryId',
-  path: '/categories/$categoryId',
+  id: "/categories/$categoryId",
+  path: "/categories/$categoryId",
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any);
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/categories/$categoryId': typeof CategoriesCategoryIdRoute
-  '/categories/': typeof CategoriesIndexRoute
+  "/": typeof IndexRoute;
+  "/categories/$categoryId": typeof CategoriesCategoryIdRoute;
+  "/categories/": typeof CategoriesIndexRoute;
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/categories/$categoryId': typeof CategoriesCategoryIdRoute
-  '/categories': typeof CategoriesIndexRoute
+  "/": typeof IndexRoute;
+  "/categories/$categoryId": typeof CategoriesCategoryIdRoute;
+  "/categories": typeof CategoriesIndexRoute;
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/categories/$categoryId': typeof CategoriesCategoryIdRoute
-  '/categories/': typeof CategoriesIndexRoute
+  __root__: typeof rootRouteImport;
+  "/": typeof IndexRoute;
+  "/categories/$categoryId": typeof CategoriesCategoryIdRoute;
+  "/categories/": typeof CategoriesIndexRoute;
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories/$categoryId' | '/categories/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories/$categoryId' | '/categories'
-  id: '__root__' | '/' | '/categories/$categoryId' | '/categories/'
-  fileRoutesById: FileRoutesById
+  fileRoutesByFullPath: FileRoutesByFullPath;
+  fullPaths: "/" | "/categories/$categoryId" | "/categories/";
+  fileRoutesByTo: FileRoutesByTo;
+  to: "/" | "/categories/$categoryId" | "/categories";
+  id: "__root__" | "/" | "/categories/$categoryId" | "/categories/";
+  fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  CategoriesCategoryIdRoute: typeof CategoriesCategoryIdRoute
-  CategoriesIndexRoute: typeof CategoriesIndexRoute
+  IndexRoute: typeof IndexRoute;
+  CategoriesCategoryIdRoute: typeof CategoriesCategoryIdRoute;
+  CategoriesIndexRoute: typeof CategoriesIndexRoute;
 }
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/categories/': {
-      id: '/categories/'
-      path: '/categories'
-      fullPath: '/categories/'
-      preLoaderRoute: typeof CategoriesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/categories/$categoryId': {
-      id: '/categories/$categoryId'
-      path: '/categories/$categoryId'
-      fullPath: '/categories/$categoryId'
-      preLoaderRoute: typeof CategoriesCategoryIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
+    "/": {
+      id: "/";
+      path: "/";
+      fullPath: "/";
+      preLoaderRoute: typeof IndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/categories/": {
+      id: "/categories/";
+      path: "/categories";
+      fullPath: "/categories/";
+      preLoaderRoute: typeof CategoriesIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/categories/$categoryId": {
+      id: "/categories/$categoryId";
+      path: "/categories/$categoryId";
+      fullPath: "/categories/$categoryId";
+      preLoaderRoute: typeof CategoriesCategoryIdRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
   }
 }
 
@@ -89,7 +89,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriesCategoryIdRoute: CategoriesCategoryIdRoute,
   CategoriesIndexRoute: CategoriesIndexRoute,
-}
+};
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>()
+  ._addFileTypes<FileRouteTypes>();
