@@ -42,7 +42,7 @@ function RouteComponent() {
 
       if (invalidCategories.length > 0) {
         console.error("invalid categories:");
-        invalidCategories.forEach((category) => console.error(category));
+        invalidCategories.forEach((error) => console.error(error));
       }
 
       const tags = new Set<string>();

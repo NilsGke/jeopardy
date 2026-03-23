@@ -1,6 +1,6 @@
 import { categorySchema } from "@/schemas/category";
 import { assertPermissions } from "./utils";
-import { useQuery } from "@tanstack/react-query";
+import { IGNORE_FILES } from "./ignoreFiles";
 
 const CATEGORY_DIR_NAME = "categories";
 const CATEGORY_META_FILE_NAME = "category-meta.json";
@@ -15,7 +15,8 @@ export const getAllCategoryIds = async (
   await assertPermissions(categoryDir, "readwrite");
 
   const ids: string[] = [];
-  for await (const [filename] of categoryDir.entries()) ids.push(filename);
+  for await (const [filename] of categoryDir.entries())
+    if (!IGNORE_FILES.has(filename)) ids.push(filename);
 
   return ids;
 };
@@ -50,12 +51,16 @@ export const getCategory = async (
   categoryId: string,
   rootDirHandle: FileSystemDirectoryHandle,
 ) => {
-  const fileHandle = await getCategoryMetaFile(categoryId, rootDirHandle);
-  const file = await fileHandle.getFile();
-  const contentString = await file.text();
-  const contentObject = JSON.parse(contentString);
-  const category = categorySchema.parse({ id: categoryId, ...contentObject });
-  return category;
+  try {
+    const fileHandle = await getCategoryMetaFile(categoryId, rootDirHandle);
+    const file = await fileHandle.getFile();
+    const contentString = await file.text();
+    const contentObject = JSON.parse(contentString);
+    const category = categorySchema.parse({ id: categoryId, ...contentObject });
+    return category;
+  } catch (error) {
+    throw Error(`Error for category with id: "${categoryId}":\n${error}`);
+  }
 };
 
 export const deleteCategory = async (
