@@ -55,9 +55,10 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
     getRootMetaFileAndState(rootDir).then(async (res) => {
       setDirectoryState(res.directoryState);
       if (res.directoryState === DirectoryState.VALID) setRootMeta(res.data);
-      else if (res.directoryState === DirectoryState.MAJOR_VERSION_TOO_OLD)
-        setRootMetaVersion(res.dirVersion);
-      else if (res.directoryState === DirectoryState.MAJOR_VERSION_TOO_NEW)
+      else if (
+        res.directoryState === DirectoryState.MAJOR_VERSION_TOO_OLD ||
+        res.directoryState === DirectoryState.MAJOR_VERSION_TOO_NEW
+      )
         setRootMetaVersion(res.dirVersion);
     });
   };

@@ -9,7 +9,12 @@ import { getAllCategoryIds, getCategory } from "@/filesystem/category";
 import { cn } from "@/lib/utils";
 import { useRootDir } from "@/providers/RootProvider";
 import type { Category } from "@/schemas/category";
-import { UndoIcon } from "@hugeicons/core-free-icons";
+import {
+  Add01Icon,
+  Cancel01Icon,
+  TagIcon,
+  UndoIcon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -82,24 +87,46 @@ function RouteComponent() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
-          <h2 className="text-lg">Tags:</h2>
+          <h2 className="text-lg space-x-2">
+            <HugeiconsIcon icon={TagIcon} className="inline" size={20} />
+            <span>Tags:</span>
+          </h2>
           <div className="flex gap-2 flex-wrap ">
-            {data.tags.map((tag) => (
-              <Toggle
-                size="sm"
-                variant="outline"
-                className="aria-pressed:bg-primary aria-pressed:text-white cursor-pointer"
-                key={tag}
-                pressed={selectedTags.includes(tag)}
-                onPressedChange={(selected) =>
-                  setSelectedTags((prev) =>
-                    selected ? [...prev, tag] : prev.filter((t) => t !== tag),
-                  )
-                }
-              >
-                {tag}
-              </Toggle>
-            ))}
+            {data.tags.map((tag) => {
+              const selected = selectedTags.includes(tag);
+              return (
+                <Toggle
+                  size="sm"
+                  variant="tag"
+                  className="aria-pressed:bg-primary aria-pressed:text-white cursor-pointer group"
+                  key={tag}
+                  pressed={selectedTags.includes(tag)}
+                  onPressedChange={(selected) =>
+                    setSelectedTags((prev) =>
+                      selected ? [...prev, tag] : prev.filter((t) => t !== tag),
+                    )
+                  }
+                >
+                  <div className="relative">
+                    <HugeiconsIcon
+                      icon={Add01Icon}
+                      className={cn(
+                        "transition-opacity",
+                        selected ? "opacity-0" : "opacity-100",
+                      )}
+                    />
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      className={cn(
+                        "absolute top-0 transition-opacity",
+                        selected ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  </div>
+                  {tag}
+                </Toggle>
+              );
+            })}
             {selectedTags.length > 0 && (
               <Button variant="outline" onClick={() => setSelectedTags([])}>
                 <HugeiconsIcon icon={UndoIcon} />

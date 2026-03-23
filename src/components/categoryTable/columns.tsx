@@ -11,18 +11,19 @@ import {
   Delete02Icon,
   TestTube01Icon,
   Edit03Icon,
+  TagIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "../ui/badge";
 import { ButtonGroup } from "../ui/button-group";
 import { Link } from "@tanstack/react-router";
-import DeleteCategoryDialog from "../DeleteCategoryDialog";
 import type { CategoriesTableMeta } from "./CategoriesTable";
+import type { ReactNode } from "react";
 
 const columnHelper = createColumnHelper<Category>();
 
 function generateSortedHeader(
-  colName: string,
+  title: ReactNode,
 ): IdentifiedColumnDef<Category, number | string | string[] | null>["header"] {
   return ({ column, header }) => {
     const sorted = header.column.getIsSorted();
@@ -32,7 +33,7 @@ function generateSortedHeader(
         className="cursor-pointer"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        {colName}
+        {title}
         <div className="size-4">
           {sorted === "desc" && (
             <HugeiconsIcon icon={ArrowUpIcon} className="size-full" />
@@ -58,11 +59,18 @@ export const columns = [
     cell: (info) => <div className="whitespace-nowrap">{info.getValue()}</div>,
   }),
   columnHelper.accessor("tags", {
-    header: generateSortedHeader("Tags"),
+    header: generateSortedHeader(
+      <div>
+        <HugeiconsIcon icon={TagIcon} className="inline mr-1" />
+        Tags
+      </div>,
+    ),
     cell: (info) => (
       <div className="flex gap-x-2 gap-y-px flex-wrap size-full items-center">
         {info.getValue().map((tag) => (
-          <Badge key={tag}>{tag}</Badge>
+          <Badge variant="tag" key={tag}>
+            {tag}
+          </Badge>
         ))}
       </div>
     ),
@@ -84,10 +92,7 @@ export const columns = [
       return (
         <ButtonGroup>
           <Button size="icon" variant="outline" title="Edit" asChild>
-            <Link
-              to="/categories/$categoryId"
-              params={{ categoryId: info.cell.id }}
-            >
+            <Link to="/categories/$categoryId" params={{ categoryId }}>
               <HugeiconsIcon icon={Edit03Icon} />
             </Link>
           </Button>
