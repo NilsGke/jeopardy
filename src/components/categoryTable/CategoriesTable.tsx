@@ -65,17 +65,15 @@ export function CategoriesTable<TData, TValue>({
         </div>
       </div>
 
-      {deleteCategoryId !== null && (
-        <DeleteCategoryDialog
-          categoryId={deleteCategoryId}
-          trigger={null}
-          open={true}
-          onOpenChange={() => {
-            refreshRows();
-            setDeleteCategoryId(null);
-          }}
-        />
-      )}
+      <DeleteCategoryDialog
+        categoryId={deleteCategoryId ?? ""}
+        trigger={null}
+        open={deleteCategoryId !== null}
+        onOpenChange={() => {
+          refreshRows();
+          setDeleteCategoryId(null);
+        }}
+      />
     </div>
   );
 }

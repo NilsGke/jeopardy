@@ -9,12 +9,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { useCallback, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { Delete02Icon } from "@hugeicons/core-free-icons";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { deleteCategory } from "@/filesystem/category";
 import { useRootDir } from "@/providers/RootProvider";
+import WaitButton from "./WaitButton";
 
 interface Props {
   categoryId: string;
@@ -52,6 +59,7 @@ export default function DeleteCategoryDialog(props: Controlled | Uncontrolled) {
     });
     prom.then(() => setOpen(false));
   }, [rootDir, categoryId]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -75,15 +83,17 @@ export default function DeleteCategoryDialog(props: Controlled | Uncontrolled) {
           </DialogDescription>
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
-              <Button type="button">Cancel</Button>
+              <Button variant="outline" type="button">
+                Cancel
+              </Button>
             </DialogClose>
-            <Button
+            <WaitButton
               variant="destructive"
-              className="hover:text-white hover:bg-red-400"
-              onClick={del}
-            >
-              Delete
-            </Button>
+              className="[&.ready]:text-white [&.ready]:bg-red-400"
+              callback={del}
+              idleText="Delete"
+              readyText="Delete forever!"
+            />
           </DialogFooter>
         </DialogHeader>
       </DialogContent>
