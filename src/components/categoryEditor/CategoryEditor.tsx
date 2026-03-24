@@ -1,5 +1,5 @@
 import { categorySchema, type Category } from "@/schemas/category";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -9,6 +9,8 @@ import {
   TagIcon,
   UndoIcon,
 } from "@hugeicons/core-free-icons";
+import { useMutation } from "@tanstack/react-query";
+import SavedStateBadge from "./SavedStateBadge";
 
 export default function CategoryEditor({
   initialCategory,
@@ -16,9 +18,23 @@ export default function CategoryEditor({
   initialCategory: Category;
 }) {
   const [category, setCategory] = useState(initialCategory);
+  const { mutate: save, status: savedState } = useMutation({
+    mutationFn: async () => {
+      await new Promise((res) => setTimeout(res, 3000));
+      throw Error();
+      return "";
+    },
+  });
+
+  useEffect(() => {
+    new Promise((res) => setTimeout(res, 2000)).then(() => save());
+  }, []);
 
   return (
     <main>
+      {/* Saved State */}
+      <SavedStateBadge savedState={savedState} />
+
       <div className="flex gap-4">
         <Input
           value={category.id}
