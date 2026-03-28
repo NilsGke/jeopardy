@@ -33,3 +33,23 @@ export async function assertPermissions(
   });
   await prom;
 }
+
+export async function copyDirectory(
+  srcDir: FileSystemDirectoryHandle,
+  destDir: FileSystemDirectoryHandle,
+) {
+  for await (const [name, handle] of srcDir.entries()) {
+    if (handle.kind === "file") {
+      const file = await handle.getFile();
+      const newFileHandle = await destDir.getFileHandle(name, { create: true });
+      const writable = await newFileHandle.createWritable();
+      await writable.write(file);
+      await writable.close();
+    } else if (handle.kind === "directory") {
+      const newSubDir = await destDir.getDirectoryHandle(name, {
+        create: true,
+      });
+      await copyDirectory(handle, newSubDir);
+    }
+  }
+}

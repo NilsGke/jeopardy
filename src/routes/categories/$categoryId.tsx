@@ -23,5 +23,5 @@ function RouteComponent() {
   if (!category)
     return <FullCentered>Loading category {categoryId}</FullCentered>;
 
-  return <CategoryEditor initialCategory={category} />;
+  return <CategoryEditor initialCategory={category} rootDir={rootDir} />;
 }
