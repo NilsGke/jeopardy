@@ -1,20 +1,13 @@
 import { categorySchema, type Category } from "@/schemas/category";
 import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Add01Icon,
-  Cancel01Icon,
-  TagIcon,
-  UndoIcon,
-} from "@hugeicons/core-free-icons";
 import { useMutation } from "@tanstack/react-query";
 import SavedStateBadge from "./SavedStateBadge";
 import { useDebounce } from "@/hooks/useDebounce";
 import { renameCategory, updateCategory } from "@/filesystem/category";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
+import TagSelector from "./TagSelector";
 
 type CategoryWithoutId = Omit<Category, "id">;
 
@@ -122,24 +115,11 @@ export default function CategoryEditor({
       </div>
 
       <section className="flex flex-wrap gap-1">
-        {category.tags.map((tag) => (
-          <Button variant="tag" size="sm" className="group" key={tag}>
-            <div className="relative">
-              <HugeiconsIcon
-                icon={TagIcon}
-                className="group-hover:opacity-0 transition-opacity"
-              />
-              <HugeiconsIcon
-                icon={Cancel01Icon}
-                className="absolute group-hover:opacity-100 opacity-0 transition-opacity top-0"
-              />
-            </div>
-            {tag}
-          </Button>
-        ))}
-        <Button variant="outline" size="sm">
-          <HugeiconsIcon icon={Add01Icon} />
-        </Button>
+        <TagSelector
+          rootDir={rootDir}
+          tags={category.tags}
+          setTags={(tags) => setCategory((prev) => ({ ...prev, tags }))}
+        />
       </section>
     </main>
   );

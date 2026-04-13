@@ -39,6 +39,7 @@ function ComboboxTrigger({
       <HugeiconsIcon
         icon={ArrowDown01Icon}
         strokeWidth={2}
+        data-combobox-arrow
         className="text-muted-foreground size-4 pointer-events-none"
       />
     </ComboboxPrimitive.Trigger>

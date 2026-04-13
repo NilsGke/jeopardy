@@ -1,6 +1,12 @@
-import { categorySchema, type Category } from "@/schemas/category";
+import {
+  categoryFileSchema,
+  categorySchema,
+  type Category,
+  type CategoryFile,
+} from "@/schemas/category";
 import { assertPermissions, copyDirectory } from "./utils";
 import { IGNORE_FILES } from "./ignoreFiles";
+import type z from "zod";
 
 const CATEGORY_DIR_NAME = "categories";
 const CATEGORY_META_FILE_NAME = "category-meta.json";
@@ -12,7 +18,7 @@ export const getAllCategoryIds = async (
   rootDirHandle: FileSystemDirectoryHandle,
 ) => {
   const categoryDir = await getRootCategoryDir(rootDirHandle);
-  await assertPermissions(categoryDir, "readwrite");
+  await assertPermissions(categoryDir, "read");
 
   const ids: string[] = [];
   for await (const [filename] of categoryDir.entries())
@@ -66,13 +72,12 @@ export const getCategory = async (
 
 export const updateCategory = async (
   categoryId: string,
-  data: Omit<Category, "id">,
+  data: CategoryFile,
   rootDirHandle: FileSystemDirectoryHandle,
 ) => {
-  const parseResult = categorySchema.safeParse({
-    ...data,
-    id: categoryId,
-  } satisfies Category);
+  const parseResult = categoryFileSchema
+    .strip()
+    .safeParse(data satisfies CategoryFile);
   if (!parseResult.success) throw Error(parseResult.error.message);
 
   const newJson = JSON.stringify(parseResult.data);
