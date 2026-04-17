@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+import useDragging from "@/hooks/useDragging";
+import { cn } from "@/lib/utils";
+import { useRef, useState, type ReactNode } from "react";
 
 export default function Timeline({
   children,
@@ -9,17 +11,48 @@ export default function Timeline({
   clipCount: number;
   length: number;
 }) {
+  const timelineRef = useRef<HTMLDivElement | null>(null);
+  const [cursorIndex, setCursorIndex] = useState(2);
+  const [cursorRef, isDraggingCursor] = useDragging<HTMLDivElement>({
+    onDragUpdate: (e) => {
+      if (!timelineRef.current) return;
+
+      const timelineRect =
+        timelineRef.current.parentElement!.getBoundingClientRect();
+      const cellWidth = timelineRect.width / length;
+      const cursorPos = Math.floor(
+        (e.clientX - timelineRect.left) / cellWidth + 1,
+      );
+      setCursorIndex(cursorPos);
+    },
+  });
+
   return (
     <div
-      className="grid gap-2"
+      ref={timelineRef}
+      className="grid py-7 gap-2"
       style={{
         gridTemplateRows: `repeat(${clipCount}, 1fr)`,
         gridTemplateColumns: `repeat(${length}, 1fr)`,
       }}
     >
+      <div
+        ref={cursorRef}
+        className="z-10 h-full w-5 flex justify-center items-center justify-self-center group row-start-1 cursor-grab"
+        style={{ gridRowEnd: clipCount + 1, gridColumnStart: cursorIndex }}
+      >
+        <div
+          className={cn(
+            "w-0.75 bg-amber-500 h-[calc(100%+30px)] rounded mx-auto group-hover:w-1.25 transition-all duration-100",
+            isDraggingCursor && "w-1.75!",
+          )}
+        />
+      </div>
+
       {Array.from(Array(length - 1)).map((_, index) => (
         <div
-          className="w-px bg-zinc-400 h-full -ml-1"
+          key={index}
+          className="w-px bg-zinc-400 h-[calc(100%+10px)] -mt-1.25 -ml-1"
           style={{
             gridRowStart: 1,
             gridRowEnd: clipCount + 1,

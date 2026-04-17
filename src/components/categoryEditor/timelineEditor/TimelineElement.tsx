@@ -106,11 +106,11 @@ export default function TimelineElement({
     >
       <div
         ref={leftGrabberRef}
-        className="top-0 -left-2 cursor-ew-resize h-full w-4 absolute"
+        className="top-0 -left-3 cursor-ew-resize h-full w-6 absolute"
       />
       <div
         ref={rightGrabberRef}
-        className="top-0 -right-2 cursor-ew-resize h-full w-4 absolute"
+        className="top-0 -right-3 cursor-ew-resize h-full w-6 absolute"
       />
       <div
         ref={centerGrabberRef}

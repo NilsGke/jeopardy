@@ -137,6 +137,7 @@ export default function CategoryEditor({
           >
             {field.timeline.map((timelineElement, timelineElementIndex) => (
               <TimelineElement
+                key={timelineElementIndex}
                 index={timelineElementIndex}
                 timelineLength={timelineLength}
                 timelineElement={timelineElement}
