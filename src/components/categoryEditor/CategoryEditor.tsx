@@ -8,6 +8,8 @@ import { renameCategory, updateCategory } from "@/filesystem/category";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import TagSelector from "./TagSelector";
+import Timeline from "./timelineEditor/Timeline";
+import TimelineElement from "./timelineEditor/TimelineElement";
 
 type CategoryWithoutId = Omit<Category, "id">;
 
@@ -94,6 +96,8 @@ export default function CategoryEditor({
   /** no more changes shuld be made to category or id while status is busy */
   const busy = renameStatus === "pending" || savingStatus === "pending";
 
+  console.log(category.fields.at(0)?.timeline.at(1));
+
   return (
     <main>
       {/* Saved State */}
@@ -121,6 +125,41 @@ export default function CategoryEditor({
           setTags={(tags) => setCategory((prev) => ({ ...prev, tags }))}
         />
       </section>
+
+      {category.fields.map((field, fieldIndex) => {
+        const timelineLength = field.timeline.reduce(
+          (biggest, curr) => (curr.end > biggest ? curr.end : biggest),
+          0,
+        );
+        return (
+          <Timeline
+            key={fieldIndex}
+            clipCount={field.timeline.length}
+            length={timelineLength}
+          >
+            {field.timeline.map((timelineElement, timelineElementIndex) => (
+              <TimelineElement
+                index={timelineElementIndex}
+                timelineLength={timelineLength}
+                timelineElement={timelineElement}
+                setTimelineElement={(newTimelineElement) => {
+                  console.log("update");
+                  setCategory((prev) => ({
+                    ...prev,
+                    fields: prev.fields.with(fieldIndex, {
+                      ...field,
+                      timeline: field.timeline.with(
+                        timelineElementIndex,
+                        newTimelineElement,
+                      ),
+                    }),
+                  }));
+                }}
+              />
+            ))}
+          </Timeline>
+        );
+      })}
     </main>
   );
 }
