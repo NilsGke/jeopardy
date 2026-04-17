@@ -1,4 +1,5 @@
 import { useDebouncedControlledState } from "@/hooks/useDebouncedControlledState";
+import useDragging from "@/hooks/useDragging";
 import { type TimelineElement } from "@/schemas/gameField";
 import { useEffect, useRef, useState } from "react";
 
@@ -21,92 +22,84 @@ export default function TimelineElement({
     },
   );
 
-  const [dragging, setDragging] = useState<"left" | "right" | null>(null);
   const [closestCell, setClosestCell] = useState(0);
 
   const timelineElementRef = useRef<HTMLDivElement | null>(null);
-  const leftGrabberRef = useRef<HTMLDivElement | null>(null);
-  const rightGrabberRef = useRef<HTMLDivElement | null>(null);
 
-  const updateClosestCell = (e: MouseEvent) => {
-    if (!timelineElementRef.current) return;
+  const getClosestCell = (e: MouseEvent) => {
+    if (!timelineElementRef.current) throw Error("timelineElementRef is null");
     const timelineRect =
       timelineElementRef.current.parentElement!.getBoundingClientRect();
     const cellWidth = timelineRect.width / timelineLength;
-    const _closestCell = Math.floor(
+    return Math.floor(
       (e.clientX - timelineRect.left + cellWidth / 2) / cellWidth + 1,
     );
-    if (closestCell !== _closestCell) setClosestCell(_closestCell);
   };
 
-  // drag start listeners
-  useEffect(() => {
-    if (!leftGrabberRef.current) return;
-    if (!rightGrabberRef.current) return;
+  const updateClosestCell = (e: MouseEvent) => {
+    const newClosestCell = getClosestCell(e);
+    if (closestCell !== newClosestCell) setClosestCell(newClosestCell);
+    return newClosestCell;
+  };
 
-    const leftmousedown = (e: MouseEvent) => {
-      e.preventDefault();
-      updateClosestCell(e);
-      setDragging("left");
-    };
-    const rightmousedown = (e: MouseEvent) => {
-      e.preventDefault();
-      updateClosestCell(e);
-      setDragging("right");
-    };
+  const [leftGrabberRef, draggingLeft] = useDragging<HTMLDivElement>({
+    onDragStart: updateClosestCell,
+    onDragUpdate: updateClosestCell,
+    onDragEnd: () => {
+      setTimelineElement(
+        { ...timelineElement, start: closestCell },
+        { instantUpdate: true },
+      );
+    },
+  });
 
-    leftGrabberRef.current.addEventListener("mousedown", leftmousedown);
-    rightGrabberRef.current.addEventListener("mousedown", rightmousedown);
+  const [rightGrabberRef, draggingRight] = useDragging<HTMLDivElement>({
+    onDragStart: updateClosestCell,
+    onDragUpdate: updateClosestCell,
+    onDragEnd: () => {
+      setTimelineElement(
+        { ...timelineElement, end: closestCell },
+        { instantUpdate: true },
+      );
+    },
+  });
 
-    return () => {
-      if (!leftGrabberRef.current) return;
-      if (!rightGrabberRef.current) return;
-      leftGrabberRef.current.addEventListener("mousedown", leftmousedown);
-      rightGrabberRef.current.addEventListener("mousedown", rightmousedown);
-    };
-  }, [timelineLength, closestCell]);
-
-  // drag stop event listeners
-  useEffect(() => {
-    if (!dragging) return;
-    if (!leftGrabberRef.current) return;
-    if (!rightGrabberRef.current) return;
-
-    const mouseup = () => {
+  const [offset, setOffset] = useState({ start: 0, end: 0 });
+  const [centerGrabberRef, draggingCenter] = useDragging<HTMLDivElement>({
+    onDragStart: (e) => {
+      const closestCell = updateClosestCell(e);
+      setOffset({
+        start: closestCell - timelineElement.start,
+        end: timelineElement.end - closestCell,
+      });
+    },
+    onDragUpdate: updateClosestCell,
+    onDragEnd: () =>
       setTimelineElement(
         {
           ...timelineElement,
-          start: dragging === "left" ? closestCell : timelineElement.start,
-          end: dragging === "right" ? closestCell : timelineElement.end,
+          start: closestCell - offset.start,
+          end: closestCell + offset.end,
         },
         { instantUpdate: true },
-      );
-      setDragging(null);
-    };
-
-    document.addEventListener("mouseup", mouseup);
-
-    return () => document.removeEventListener("mouseup", mouseup);
-  }, [dragging, timelineElement, closestCell]);
-
-  // draging event listeners
-  useEffect(() => {
-    if (!dragging) return;
-    if (!leftGrabberRef.current) return;
-    if (!rightGrabberRef.current) return;
-
-    document.addEventListener("mousemove", updateClosestCell);
-    return () => document.removeEventListener("mousemove", updateClosestCell);
-  }, [dragging, closestCell, timelineLength, updateClosestCell]);
+      ),
+  });
 
   return (
     <div
       ref={timelineElementRef}
       className="border bg-blue-500 rounded px-3 py-1 relative"
       style={{
-        gridColumnStart:
-          dragging === "left" ? closestCell : timelineElement.start,
-        gridColumnEnd: dragging === "right" ? closestCell : timelineElement.end,
+        gridColumnStart: draggingLeft
+          ? closestCell
+          : draggingCenter
+            ? closestCell - offset.start
+            : timelineElement.start,
+        gridColumnEnd: draggingRight
+          ? closestCell
+          : draggingCenter
+            ? closestCell + offset.end
+            : timelineElement.end,
         gridRowStart: index + 1,
         viewTransitionName: `timeline-element-${index}`,
       }}
@@ -118,6 +111,10 @@ export default function TimelineElement({
       <div
         ref={rightGrabberRef}
         className="top-0 -right-2 cursor-ew-resize h-full w-4 absolute"
+      />
+      <div
+        ref={centerGrabberRef}
+        className="top-0 left-0 mx-2 cursor-grab h-full w-[calc(100%-2*0.5rem)] absolute"
       />
 
       {timelineElement.type === "text"

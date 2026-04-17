@@ -96,8 +96,6 @@ export default function CategoryEditor({
   /** no more changes shuld be made to category or id while status is busy */
   const busy = renameStatus === "pending" || savingStatus === "pending";
 
-  console.log(category.fields.at(0)?.timeline.at(1));
-
   return (
     <main>
       {/* Saved State */}
@@ -142,8 +140,7 @@ export default function CategoryEditor({
                 index={timelineElementIndex}
                 timelineLength={timelineLength}
                 timelineElement={timelineElement}
-                setTimelineElement={(newTimelineElement) => {
-                  console.log("update");
+                setTimelineElement={(newTimelineElement) =>
                   setCategory((prev) => ({
                     ...prev,
                     fields: prev.fields.with(fieldIndex, {
@@ -153,8 +150,8 @@ export default function CategoryEditor({
                         newTimelineElement,
                       ),
                     }),
-                  }));
-                }}
+                  }))
+                }
               />
             ))}
           </Timeline>
