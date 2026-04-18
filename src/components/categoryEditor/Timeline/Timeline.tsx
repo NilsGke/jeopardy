@@ -16,9 +16,7 @@ export default function Timeline({
   const [cursorRef, isDraggingCursor] = useDragging<HTMLDivElement>({
     onDragUpdate: (e) => {
       if (!timelineRef.current) return;
-
-      const timelineRect =
-        timelineRef.current.parentElement!.getBoundingClientRect();
+      const timelineRect = timelineRef.current.getBoundingClientRect();
       const cellWidth = timelineRect.width / length;
       const cursorPos = Math.floor(
         (e.clientX - timelineRect.left) / cellWidth + 1,
