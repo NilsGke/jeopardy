@@ -4,9 +4,24 @@ import { Directory } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Button } from "./ui/button";
+import { Toaster } from "./ui/sonner";
 
 export default function DirectoryChooser() {
   const storeDirectoryInSettings = async () => {
+    if (!("showDirectoryPicker" in window))
+      return toast.error(
+        "Seems like your browser does not support the FilesystemAPI. Please use a browser that has support (eg Chrome / any chromium browser)",
+        {
+          duration: Infinity,
+          className: "bg-red-400! w-120!",
+          action: {
+            label: "see supported browsers",
+            onClick: () =>
+              window.open("https://caniuse.com/filesystem", "_blank"),
+          },
+        },
+      );
+
     const rootDirHandle = await window.showDirectoryPicker().catch(() => null);
     if (!rootDirHandle) return toast.error("No directory selected");
 
@@ -23,6 +38,7 @@ export default function DirectoryChooser() {
 
   return (
     <Card className="w-max">
+      <Toaster />
       <CardHeader>
         <h2 className="text-3xl font-bold">Choose your Jeopardy-Directory</h2>
       </CardHeader>
