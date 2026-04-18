@@ -25,6 +25,7 @@ export const timelineElementSchema = timelineContentSchema.and(
   z.object({
     start: z.number().int().min(0),
     end: z.number().int().min(0),
+    id: z.string(),
   }),
 );
 
@@ -34,6 +35,7 @@ export const gameFieldSchema = z.object({
   timeline: timelineSchema,
   // answerIndex: z.number().int().min(0),
   points: z.number().int().min(0),
+  id: z.string(),
 });
 
 export type GameField = z.infer<typeof gameFieldSchema>;

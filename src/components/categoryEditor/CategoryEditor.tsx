@@ -8,8 +8,7 @@ import { renameCategory, updateCategory } from "@/filesystem/category";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import TagSelector from "./TagSelector";
-import Timeline from "./timelineEditor/Timeline";
-import TimelineElement from "./timelineEditor/TimelineElement";
+import GamefieldEditor from "./GamefieldEditor";
 
 type CategoryWithoutId = Omit<Category, "id">;
 
@@ -97,67 +96,53 @@ export default function CategoryEditor({
   const busy = renameStatus === "pending" || savingStatus === "pending";
 
   return (
-    <main>
-      {/* Saved State */}
-      <SavedStateBadge
-        savedState={
-          busy || debouncingId || debouncingCategory ? "pending" : savingStatus
-        }
-      />
+    <main className="space-y-8">
+      <section className="flex justify-between align-top flex-wrap w-full gap-4">
+        <div className="flex gap-4">
+          <Input
+            disabled={busy}
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            aria-invalid={
+              !categorySchema.shape.id.safeParse(categoryId).success
+            }
+            className="w-52"
+            ref={categoryIdInputRef}
+          />
+        </div>
 
-      <div className="flex gap-4">
-        <Input
-          disabled={busy}
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          aria-invalid={!categorySchema.shape.id.safeParse(categoryId).success}
-          className="w-52"
-          ref={categoryIdInputRef}
-        />
-      </div>
-
-      <section className="flex flex-wrap gap-1">
         <TagSelector
           rootDir={rootDir}
           tags={category.tags}
           setTags={(tags) => setCategory((prev) => ({ ...prev, tags }))}
         />
+
+        <div className="w-36 flex justify-end">
+          <SavedStateBadge
+            className="justify-self-end"
+            savedState={
+              busy || debouncingId || debouncingCategory
+                ? "pending"
+                : savingStatus
+            }
+          />
+        </div>
       </section>
 
-      {category.fields.map((field, fieldIndex) => {
-        const timelineLength = field.timeline.reduce(
-          (biggest, curr) => (curr.end > biggest ? curr.end : biggest),
-          0,
-        );
-        return (
-          <Timeline
+      <section className="space-y-4">
+        {category.fields.map((field, fieldIndex) => (
+          <GamefieldEditor
             key={fieldIndex}
-            clipCount={field.timeline.length}
-            length={timelineLength}
-          >
-            {field.timeline.map((timelineElement, timelineElementIndex) => (
-              <TimelineElement
-                key={timelineElementIndex}
-                index={timelineElementIndex}
-                timelineLength={timelineLength}
-                timelineElement={timelineElement}
-                setTimelineElement={(newTimelineElement) =>
-                  setCategory((prev) => ({
-                    ...prev,
-                    fields: prev.fields.with(fieldIndex, {
-                      ...field,
-                      timeline: field.timeline.with(
-                        timelineElementIndex,
-                        newTimelineElement,
-                      ),
-                    }),
-                  }))
-                }
-              />
-            ))}
-          </Timeline>
-        );
-      })}
+            gameField={field}
+            setGameField={(newGameField) =>
+              setCategory((prev) => ({
+                ...prev,
+                fields: prev.fields.with(fieldIndex, newGameField),
+              }))
+            }
+          />
+        ))}
+      </section>
     </main>
   );
 }

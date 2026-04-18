@@ -52,13 +52,17 @@ export default function Timeline({
       {Array.from(Array(length - 1)).map((_, index) => (
         <div
           key={index}
-          className="w-px bg-zinc-400 h-[calc(100%+10px)] -mt-1.25 -ml-1"
+          className="w-px flex justify-center relative bg-zinc-400 h-[calc(100%+10px)] -mt-1.25 -ml-1"
           style={{
             gridRowStart: 1,
             gridRowEnd: clipCount + 1,
             gridColumnStart: index + 2,
           }}
-        />
+        >
+          <span className="absolute -top-4 text-zinc-400 text-xs">
+            {index + 1}
+          </span>
+        </div>
       ))}
       {children}
     </div>

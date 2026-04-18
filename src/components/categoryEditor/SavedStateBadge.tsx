@@ -6,13 +6,16 @@ import {
   Tick01Icon,
 } from "@hugeicons/core-free-icons";
 import type { MutationObserverResult } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 
 type MutationState = MutationObserverResult["status"];
 
 export default function SavedStateBadge({
   savedState,
+  className,
 }: {
   savedState: MutationState;
+  className?: string;
 }) {
   const icon = (
     {
@@ -40,7 +43,7 @@ export default function SavedStateBadge({
   return (
     <Badge
       variant={savedState === "success" ? "success" : "warning"}
-      className={styles}
+      className={cn(styles, className)}
     >
       <HugeiconsIcon icon={icon} strokeWidth={2} />
       <span>{text}</span>

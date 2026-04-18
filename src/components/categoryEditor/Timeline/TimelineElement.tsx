@@ -1,7 +1,7 @@
 import { useDebouncedControlledState } from "@/hooks/useDebouncedControlledState";
 import useDragging from "@/hooks/useDragging";
 import { type TimelineElement } from "@/schemas/gameField";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export default function TimelineElement({
   index,
@@ -101,7 +101,7 @@ export default function TimelineElement({
             ? closestCell + offset.end
             : timelineElement.end,
         gridRowStart: index + 1,
-        viewTransitionName: `timeline-element-${index}`,
+        viewTransitionName: `timeline-element-${timelineElement.id}`,
       }}
     >
       <div
@@ -117,9 +117,18 @@ export default function TimelineElement({
         className="top-0 left-0 mx-2 cursor-grab h-full w-[calc(100%-2*0.5rem)] absolute"
       />
 
-      {timelineElement.type === "text"
-        ? timelineElement.content
-        : timelineElement.type}
+      {timelineElement.type === "text" ? (
+        <p
+          className="w-fit"
+          style={{
+            viewTransitionName: `timeline-element-text-${timelineElement.id}`,
+          }}
+        >
+          {timelineElement.content}
+        </p>
+      ) : (
+        timelineElement.type
+      )}
     </div>
   );
 }
