@@ -1,6 +1,6 @@
 import useDragging from "@/hooks/useDragging";
 import { cn } from "@/lib/utils";
-import { useRef, useState, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 
 export default function Timeline({
   children,
@@ -25,7 +25,7 @@ export default function Timeline({
       const cursorPos = Math.floor(
         (e.clientX - timelineRect.left) / cellWidth + 1,
       );
-      setCursorIndex(cursorPos);
+      setCursorIndex(cursorPos < 1 ? 1 : cursorPos);
     },
   });
 

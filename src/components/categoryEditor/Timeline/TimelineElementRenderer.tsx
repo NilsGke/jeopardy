@@ -23,7 +23,7 @@ export default function TimelineElementRenderer({
 
   switch (element.type) {
     case "text":
-      return <Wrapper className="text-2xl">{element.content}</Wrapper>;
+      return <Wrapper className="text-4xl">{element.content}</Wrapper>;
     case "image":
       return <Wrapper>{element.type}</Wrapper>;
     case "sound":

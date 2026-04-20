@@ -7,7 +7,6 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import withViewTransition from "@/util/withViewTransition";
 import TimelineRenderer from "./Timeline/TimelineRenderer";
-import sortTimeline from "@/util/sortTimeline";
 
 export default function GamefieldEditor({
   gameField,
@@ -23,13 +22,6 @@ export default function GamefieldEditor({
     (biggest, curr) => (curr.end > biggest ? curr.end : biggest),
     0,
   );
-
-  const activeElements = gameField.timeline
-    .filter(
-      ({ start, end }) =>
-        start <= cursorIndex + 0.5 && end >= cursorIndex + 0.5,
-    )
-    .sort(sortTimeline);
 
   return (
     <div
@@ -83,7 +75,11 @@ export default function GamefieldEditor({
 
       {expanded && (
         <div>
-          <TimelineRenderer elements={activeElements} className="w-[50vw]" />
+          <TimelineRenderer
+            timeline={gameField.timeline}
+            cursorIndex={cursorIndex}
+            className="h-[40vh]"
+          />
 
           <Timeline
             cursorIndex={cursorIndex}

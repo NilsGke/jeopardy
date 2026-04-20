@@ -1,34 +1,44 @@
-import type { TimelineElement } from "@/schemas/gameField";
+import type { Timeline } from "@/schemas/gameField";
 import TimelineElementRenderer from "./TimelineElementRenderer";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 import withViewTransition from "@/util/withViewTransition";
+import sortTimeline from "@/util/sortTimeline";
 
 export default function TimelineRenderer({
-  elements: externalElements,
+  timeline,
+  cursorIndex: externalCursorIndex,
   className,
 }: {
-  elements: TimelineElement[];
+  timeline: Timeline;
+  cursorIndex: number;
   className?: string;
 }) {
-  const [elements, setElements] = useState(externalElements);
   const initialRender = useRef(true);
+
+  const [cursorPos, setCursorPos] = useState(externalCursorIndex);
   useEffect(() => {
     if (initialRender.current) {
       initialRender.current = false;
       return;
     }
-    withViewTransition(() => setElements(externalElements));
-  }, [externalElements]);
+
+    withViewTransition(() => setCursorPos(externalCursorIndex));
+  }, [externalCursorIndex]);
+
+  const activeElements = timeline
+    .filter((elm) => elm.start <= cursorPos + 0.5 && elm.end >= cursorPos + 0.5)
+    .sort(sortTimeline);
+  console.log(cursorPos);
 
   return (
     <div
       className={cn(
-        "flex justify-center items-center gap-[5%] rounded-2xl border p-4 aspect-video",
+        "flex justify-center items-center flex-wrap gap-[5%] rounded-2xl border p-4 aspect-video",
         className,
       )}
     >
-      {elements.map((element) => (
+      {activeElements.map((element) => (
         <TimelineElementRenderer key={element.id} element={element} />
       ))}
     </div>
