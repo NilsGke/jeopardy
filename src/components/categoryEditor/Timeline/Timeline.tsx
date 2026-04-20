@@ -6,13 +6,17 @@ export default function Timeline({
   children,
   clipCount,
   length,
+  cursorIndex,
+  setCursorIndex,
 }: {
   children: ReactNode;
   clipCount: number;
   length: number;
+  cursorIndex: number;
+  setCursorIndex: (newCursorIndex: number) => void;
 }) {
   const timelineRef = useRef<HTMLDivElement | null>(null);
-  const [cursorIndex, setCursorIndex] = useState(2);
+
   const [cursorRef, isDraggingCursor] = useDragging<HTMLDivElement>({
     onDragUpdate: (e) => {
       if (!timelineRef.current) return;

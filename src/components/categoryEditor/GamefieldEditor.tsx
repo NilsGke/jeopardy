@@ -6,6 +6,8 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import withViewTransition from "@/util/withViewTransition";
+import TimelineRenderer from "./Timeline/TimelineRenderer";
+import sortTimeline from "@/util/sortTimeline";
 
 export default function GamefieldEditor({
   gameField,
@@ -15,11 +17,19 @@ export default function GamefieldEditor({
   setGameField: (newCategory: GameField) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [cursorIndex, setCursorIndex] = useState(1);
 
   const timelineLength = gameField.timeline.reduce(
     (biggest, curr) => (curr.end > biggest ? curr.end : biggest),
     0,
   );
+
+  const activeElements = gameField.timeline
+    .filter(
+      ({ start, end }) =>
+        start <= cursorIndex + 0.5 && end >= cursorIndex + 0.5,
+    )
+    .sort(sortTimeline);
 
   return (
     <div
@@ -72,25 +82,34 @@ export default function GamefieldEditor({
       )}
 
       {expanded && (
-        <Timeline clipCount={gameField.timeline.length} length={timelineLength}>
-          {gameField.timeline.map((timelineElement, timelineElementIndex) => (
-            <TimelineElement
-              key={timelineElement.id}
-              index={timelineElementIndex}
-              timelineLength={timelineLength}
-              timelineElement={timelineElement}
-              setTimelineElement={(newTimelineElement) =>
-                setGameField({
-                  ...gameField,
-                  timeline: gameField.timeline.with(
-                    timelineElementIndex,
-                    newTimelineElement,
-                  ),
-                })
-              }
-            />
-          ))}
-        </Timeline>
+        <div>
+          <TimelineRenderer elements={activeElements} className="w-[50vw]" />
+
+          <Timeline
+            cursorIndex={cursorIndex}
+            setCursorIndex={setCursorIndex}
+            clipCount={gameField.timeline.length}
+            length={timelineLength}
+          >
+            {gameField.timeline.map((timelineElement, timelineElementIndex) => (
+              <TimelineElement
+                key={timelineElement.id}
+                index={timelineElementIndex}
+                timelineLength={timelineLength}
+                timelineElement={timelineElement}
+                setTimelineElement={(newTimelineElement) =>
+                  setGameField({
+                    ...gameField,
+                    timeline: gameField.timeline.with(
+                      timelineElementIndex,
+                      newTimelineElement,
+                    ),
+                  })
+                }
+              />
+            ))}
+          </Timeline>
+        </div>
       )}
 
       <Button
