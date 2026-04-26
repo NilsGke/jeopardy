@@ -1,5 +1,5 @@
-import type { GameField } from "@/schemas/gameField";
-import { useState } from "react";
+import type { GameFieldType } from "@/schemas/gameField";
+import { useRef, useState } from "react";
 import Timeline from "./Timeline/Timeline";
 import TimelineElement from "./Timeline/TimelineElement";
 import { Button } from "../ui/button";
@@ -7,16 +7,18 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import withViewTransition from "@/util/withViewTransition";
 import TimelineRenderer from "./Timeline/TimelineRenderer";
+import TimelineCursor from "./Timeline/TimelineCursor";
 
 export default function GamefieldEditor({
   gameField,
   setGameField,
 }: {
-  gameField: GameField;
-  setGameField: (newCategory: GameField) => void;
+  gameField: GameFieldType;
+  setGameField: (newCategory: GameFieldType) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const [cursorIndex, setCursorIndex] = useState(1);
+  const cursorIndexRef = useRef(1);
+  const timelineRef = useRef<HTMLDivElement | null>(null);
 
   const timelineLength = gameField.timeline.reduce(
     (biggest, curr) => (curr.end > biggest ? curr.end : biggest),
@@ -77,16 +79,22 @@ export default function GamefieldEditor({
         <div>
           <TimelineRenderer
             timeline={gameField.timeline}
-            cursorIndex={cursorIndex}
+            cursorIndexRef={cursorIndexRef}
             className="h-[40vh]"
           />
 
           <Timeline
-            cursorIndex={cursorIndex}
-            setCursorIndex={setCursorIndex}
+            ref={timelineRef}
             clipCount={gameField.timeline.length}
             length={timelineLength}
           >
+            <TimelineCursor
+              cursorIndexRef={cursorIndexRef}
+              timelineRef={timelineRef}
+              clipCount={gameField.timeline.length}
+              timelineLength={timelineLength}
+            />
+
             {gameField.timeline.map((timelineElement, timelineElementIndex) => (
               <TimelineElement
                 key={timelineElement.id}

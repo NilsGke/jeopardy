@@ -1,6 +1,10 @@
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { useDebouncedControlledState } from "@/hooks/useDebouncedControlledState";
 import useDragging from "@/hooks/useDragging";
 import { type TimelineElement } from "@/schemas/gameField";
+import { CancelCircleIcon, Edit03Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { useRef, useState } from "react";
 
 export default function TimelineElement({
@@ -88,7 +92,7 @@ export default function TimelineElement({
   return (
     <div
       ref={timelineElementRef}
-      className="border bg-blue-500 rounded px-3 py-1 relative"
+      className="text-white border bg-blue-500 rounded px-3 py-1 relative h-13"
       style={{
         gridColumnStart: draggingLeft
           ? closestCell
@@ -117,18 +121,29 @@ export default function TimelineElement({
         className="top-0 left-0 mx-2 cursor-grab h-full w-[calc(100%-2*0.5rem)] absolute"
       />
 
-      {timelineElement.type === "text" ? (
-        <p
-          className="w-fit"
-          style={{
-            viewTransitionName: `timeline-element-text-${timelineElement.id}`,
-          }}
-        >
-          {timelineElement.content}
-        </p>
-      ) : (
-        timelineElement.type
-      )}
+      <div className="flex justify-between items-center">
+        {timelineElement.type === "text" ? (
+          <p
+            className="w-fit justify-self-start"
+            style={{
+              viewTransitionName: `timeline-element-text-${timelineElement.id}`,
+            }}
+          >
+            {timelineElement.content}
+          </p>
+        ) : (
+          timelineElement.type
+        )}
+
+        <div className=" ml-auto z-20 *:bg-transparent *:border-none *:*:*:stroke-2">
+          <Button variant="outline" size="icon-lg">
+            <HugeiconsIcon icon={Edit03Icon} />
+          </Button>
+          <Button variant="outline" size="icon-lg">
+            <HugeiconsIcon icon={CancelCircleIcon} />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

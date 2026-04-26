@@ -38,6 +38,6 @@ export const gameFieldSchema = z.object({
   id: z.string(),
 });
 
-export type GameField = z.infer<typeof gameFieldSchema>;
-export type Timeline = z.infer<typeof timelineSchema>;
-export type TimelineElement = z.infer<typeof timelineElementSchema>;
+export type GameFieldType = z.infer<typeof gameFieldSchema>;
+export type TimelineType = z.infer<typeof timelineSchema>;
+export type TimelineElementType = z.infer<typeof timelineElementSchema>;

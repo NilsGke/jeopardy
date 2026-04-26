@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 
 export default function useDragging<T extends HTMLElement>({
   onDragStart,
   onDragUpdate,
   onDragEnd,
 }: {
-  onDragStart?: (e: MouseEvent) => void;
-  onDragUpdate?: (e: MouseEvent) => void;
-  onDragEnd?: (e: MouseEvent) => void;
+  onDragStart?: (e: MouseEvent, elmRef: RefObject<T | null>) => void;
+  onDragUpdate?: (e: MouseEvent, elmRef: RefObject<T | null>) => void;
+  onDragEnd?: (e: MouseEvent, elmRef: RefObject<T | null>) => void;
 }) {
   const [dragging, setDragging] = useState(false);
   const dragElementRef = useRef<T | null>(null);
@@ -19,7 +19,7 @@ export default function useDragging<T extends HTMLElement>({
     const mousedown = (e: MouseEvent) => {
       e.preventDefault();
       setDragging(true);
-      if (onDragStart) onDragStart(e);
+      if (onDragStart) onDragStart(e, dragElementRef);
     };
 
     dragElementRef.current.addEventListener("mousedown", mousedown);
@@ -36,7 +36,7 @@ export default function useDragging<T extends HTMLElement>({
 
     const mouseup = (e: MouseEvent) => {
       setDragging(false);
-      if (onDragEnd) onDragEnd(e);
+      if (onDragEnd) onDragEnd(e, dragElementRef);
     };
 
     document.addEventListener("mouseup", mouseup);
@@ -49,8 +49,10 @@ export default function useDragging<T extends HTMLElement>({
     if (!dragElementRef.current) return;
     if (!onDragUpdate) return;
 
-    document.addEventListener("mousemove", onDragUpdate);
-    return () => document.removeEventListener("mousemove", onDragUpdate);
+    const update = (e: MouseEvent) => onDragUpdate(e, dragElementRef);
+
+    document.addEventListener("mousemove", update);
+    return () => document.removeEventListener("mousemove", update);
   }, [dragging, onDragUpdate]);
 
   return [dragElementRef, dragging] as const;
