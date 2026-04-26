@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { useDebouncedControlledState } from "@/hooks/useDebouncedControlledState";
 import useDragging from "@/hooks/useDragging";
-import { type TimelineElement } from "@/schemas/gameField";
+import { type TimelineElementType } from "@/schemas/gameField";
 import { CancelCircleIcon, Edit03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useRef, useState } from "react";
@@ -15,8 +14,8 @@ export default function TimelineElement({
 }: {
   index: number;
   timelineLength: number;
-  timelineElement: TimelineElement;
-  setTimelineElement: (newElm: TimelineElement) => void;
+  timelineElement: TimelineElementType;
+  setTimelineElement: (newElm: TimelineElementType) => void;
 }) {
   const [timelineElement, setTimelineElement] = useDebouncedControlledState(
     externalTimelineElement,

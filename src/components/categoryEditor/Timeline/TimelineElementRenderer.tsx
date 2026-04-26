@@ -1,10 +1,10 @@
-import type { TimelineElement } from "@/schemas/gameField";
+import type { TimelineElementType } from "@/schemas/gameField";
 import type { ReactNode } from "react";
 
 export default function TimelineElementRenderer({
   element,
 }: {
-  element: TimelineElement;
+  element: TimelineElementType;
 }) {
   const Wrapper = ({
     children,

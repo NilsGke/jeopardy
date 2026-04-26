@@ -55,6 +55,14 @@ jobs:
 
       - name: Deploy to Vercel
         if: env.new_tag == 'true'
+        run: |
+          pnpm dlx vercel@latest pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+          pnpm dlx vercel@latest build --prod --token=${{ secrets.VERCEL_TOKEN }}
+          pnpm dlx vercel@latest deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+          pnpm dlx vercel@latest alias set $(pnpm dlx vercel@latest deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}) v${{ env.MAJOR }}.jeopardy.nilsgke.dev --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        if: env.new_tag == 'true'
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
