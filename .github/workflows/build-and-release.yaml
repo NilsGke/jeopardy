@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v3
         if: env.new_tag == 'true'
         with:
-          node-version: 18
+          node-version: 20
 
       - uses: pnpm/action-setup@v2
         if: env.new_tag == 'true'
