@@ -1,5 +1,11 @@
 # jeopardy
 
+## 0.3.1
+
+### Patch Changes
+
+- 2518210: fix type name and gh deploy workflow
+
 ## 0.3.0
 
 ### Minor Changes
