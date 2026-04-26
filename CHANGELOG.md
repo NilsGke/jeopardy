@@ -1,5 +1,11 @@
 # jeopardy
 
+## 0.3.2
+
+### Patch Changes
+
+- 431b059: bump workflow node version
+
 ## 0.3.1
 
 ### Patch Changes
