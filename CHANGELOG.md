@@ -1,5 +1,11 @@
 # jeopardy
 
+## 0.3.0
+
+### Minor Changes
+
+- cd97256: adds categories, table, category editor with timeline, preview, ...
+
 ## 0.2.0
 
 ### Minor Changes
