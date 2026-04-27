@@ -25,12 +25,33 @@ export async function assertPermissions(
   const perms = await handle.queryPermission({ mode });
   if (perms === "granted") return;
 
-  const prom = handle.requestPermission({ mode });
-  toast.promise(prom, {
-    loading: "the app needs permission to read this file, please approve",
-    error: "without approval the app cannot function",
-    success: "Permission approved!",
-  });
+  let resolve: () => void;
+  const prom = new Promise<void>((res) => (resolve = res));
+
+  const requestPermission = () => {
+    toast(
+      `The app needs permission to read this ${handle.kind}. Without, the app cannot function.`,
+      {
+        action: {
+          label: "Request Permission",
+          onClick: () =>
+            handle
+              .requestPermission({ mode })
+              .then((rs) => {
+                console.log(rs);
+                if (rs === "prompt" || rs === "denied")
+                  throw Error("Permission required");
+              })
+              .then(resolve)
+              .catch(requestPermission),
+        },
+        onDismiss: requestPermission,
+        duration: 0,
+      },
+    );
+  };
+
+  requestPermission();
   await prom;
 }
 
