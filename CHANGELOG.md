@@ -1,5 +1,11 @@
 # jeopardy
 
+## 0.3.3
+
+### Patch Changes
+
+- aad8d94: Fix FileSystem permission request to use user action.
+
 ## 0.3.2
 
 ### Patch Changes
