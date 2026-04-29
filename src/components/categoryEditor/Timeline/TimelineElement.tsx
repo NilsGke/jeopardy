@@ -101,11 +101,14 @@ export default function TimelineElement({
         },
       )}
       style={{
-        gridColumnStart: draggingLeft
-          ? closestCell
-          : draggingCenter
-            ? closestCell - offset.start
-            : timelineElement.start,
+        gridColumnStart: Math.max(
+          0,
+          draggingLeft
+            ? closestCell
+            : draggingCenter
+              ? closestCell - offset.start
+              : timelineElement.start,
+        ),
         gridColumnEnd: draggingRight
           ? closestCell
           : draggingCenter
