@@ -25,7 +25,7 @@ export default function useDragging<T extends HTMLElement>({
     dragElementRef.current.addEventListener("mousedown", mousedown);
     return () => {
       if (!dragElementRef.current) return;
-      dragElementRef.current.addEventListener("mousedown", mousedown);
+      dragElementRef.current.removeEventListener("mousedown", mousedown);
     };
   }, [onDragStart]);
 

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useDebouncedControlledState } from "@/hooks/useDebouncedControlledState";
 import useDragging from "@/hooks/useDragging";
+import { cn } from "@/lib/utils";
 import { type TimelineElementType } from "@/schemas/gameField";
 import { CancelCircleIcon, Edit03Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -91,7 +92,14 @@ export default function TimelineElement({
   return (
     <div
       ref={timelineElementRef}
-      className="text-white border bg-blue-500 rounded px-3 py-1 relative h-13"
+      className={cn(
+        "text-white border bg-linear-to-r via-blue-500 from-blue-500 transition-colors to-blue-500 rounded px-3 py-1 relative h-13",
+        {
+          "from-blue-600": draggingLeft,
+          "to-blue-600": draggingRight,
+          "via-blue-600": draggingCenter,
+        },
+      )}
       style={{
         gridColumnStart: draggingLeft
           ? closestCell
