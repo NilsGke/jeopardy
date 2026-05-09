@@ -17,8 +17,9 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { initNewJFDirectory } from "@/filesystem/initNewJFDirectory";
-import { Link } from "@tanstack/react-router";
 import JeopardyDirectoryChooser from "@/components/JeopardyDirectoryChooser";
+import MigrationDialog from "@/components/migration/MigrationDialog";
+import { migrations } from "@/filesystem/migrations";
 
 const RootContext = createContext<FileSystemDirectoryHandle | null>(null);
 
@@ -176,7 +177,16 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
       </FullCentered>
     );
 
-  if (directoryState === DirectoryState.MAJOR_VERSION_TOO_OLD)
+  if (directoryState === DirectoryState.MAJOR_VERSION_TOO_OLD) {
+    if (!rootMetaVersion) throw Error("rootMetaVersion is null");
+
+    const migration = migrations.find(
+      (migration) => migration.newMajorVersion === rootMetaVersion.major + 1,
+    );
+
+    if (!migration)
+      throw Error("no migration found but root meta version is out of date");
+
     return (
       <FullCentered>
         <Card className="md:min-w-lg min-w-sm ">
@@ -193,17 +203,13 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
             </p>
           </CardContent>
           <CardFooter className="flex gap-3 flex-wrap">
-            <Button
-              // TODO: implement upgrade
-              onClick={() => alert("not implemented yet")}
-            >
-              Upgrade
-            </Button>
+            <MigrationDialog migration={migration} />
+
             <Button variant="secondary" asChild>
               <a
-                href={`https://v${rootMetaVersion?.major}.${import.meta.env.VITE_PROD_DOMAIN}`}
+                href={`https://v${rootMetaVersion.major}.${import.meta.env.VITE_PROD_DOMAIN}`}
               >
-                Use old app version (v{rootMetaVersion?.major})
+                Use old app version (v{rootMetaVersion.major})
               </a>
             </Button>
             <Button
@@ -218,6 +224,7 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
         </Card>
       </FullCentered>
     );
+  }
 
   if (directoryState === DirectoryState.MAJOR_VERSION_TOO_NEW)
     return (
