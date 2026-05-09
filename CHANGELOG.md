@@ -1,5 +1,11 @@
 # jeopardy
 
+## 0.4.0
+
+### Minor Changes
+
+- 1065720: Adds migration functionality and ui to the app.
+
 ## 0.3.4
 
 ### Patch Changes
