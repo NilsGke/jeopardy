@@ -1,5 +1,0 @@
----
-"jeopardy": patch
----
-
-fixes timeline

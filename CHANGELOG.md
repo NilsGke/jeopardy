@@ -1,5 +1,11 @@
 # jeopardy
 
+## 0.3.4
+
+### Patch Changes
+
+- 0c9df55: fixes timeline
+
 ## 0.3.3
 
 ### Patch Changes
