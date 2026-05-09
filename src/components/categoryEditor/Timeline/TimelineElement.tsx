@@ -51,7 +51,7 @@ export default function TimelineElement({
     onDragUpdate: updateClosestCell,
     onDragEnd: () => {
       setTimelineElement(
-        { ...timelineElement, start: closestCell },
+        { ...timelineElement, start: Math.max(0, closestCell) },
         { instantUpdate: true },
       );
     },
@@ -62,7 +62,7 @@ export default function TimelineElement({
     onDragUpdate: updateClosestCell,
     onDragEnd: () => {
       setTimelineElement(
-        { ...timelineElement, end: closestCell },
+        { ...timelineElement, end: Math.max(0, closestCell) },
         { instantUpdate: true },
       );
     },
@@ -73,8 +73,8 @@ export default function TimelineElement({
     onDragStart: (e) => {
       const closestCell = updateClosestCell(e);
       setOffset({
-        start: closestCell - timelineElement.start,
-        end: timelineElement.end - closestCell,
+        start: Math.max(0, closestCell - timelineElement.start),
+        end: Math.max(0, timelineElement.end - closestCell),
       });
     },
     onDragUpdate: updateClosestCell,
@@ -82,8 +82,8 @@ export default function TimelineElement({
       setTimelineElement(
         {
           ...timelineElement,
-          start: closestCell - offset.start,
-          end: closestCell + offset.end,
+          start: Math.max(0, closestCell - offset.start),
+          end: Math.max(0, closestCell + offset.end),
         },
         { instantUpdate: true },
       ),
