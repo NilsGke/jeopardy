@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GamesIndexRouteImport } from './routes/games/index'
 import { Route as CategoriesIndexRouteImport } from './routes/categories/index'
 import { Route as CategoriesCategoryIdRouteImport } from './routes/categories/$categoryId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GamesIndexRoute = GamesIndexRouteImport.update({
+  id: '/games/',
+  path: '/games/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoriesIndexRoute = CategoriesIndexRouteImport.update({
@@ -33,30 +39,34 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
   '/categories/': typeof CategoriesIndexRoute
+  '/games/': typeof GamesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
   '/categories': typeof CategoriesIndexRoute
+  '/games': typeof GamesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/categories/$categoryId': typeof CategoriesCategoryIdRoute
   '/categories/': typeof CategoriesIndexRoute
+  '/games/': typeof GamesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/categories/$categoryId' | '/categories/'
+  fullPaths: '/' | '/categories/$categoryId' | '/categories/' | '/games/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/categories/$categoryId' | '/categories'
-  id: '__root__' | '/' | '/categories/$categoryId' | '/categories/'
+  to: '/' | '/categories/$categoryId' | '/categories' | '/games'
+  id: '__root__' | '/' | '/categories/$categoryId' | '/categories/' | '/games/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CategoriesCategoryIdRoute: typeof CategoriesCategoryIdRoute
   CategoriesIndexRoute: typeof CategoriesIndexRoute
+  GamesIndexRoute: typeof GamesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/games/': {
+      id: '/games/'
+      path: '/games'
+      fullPath: '/games/'
+      preLoaderRoute: typeof GamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/categories/': {
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CategoriesCategoryIdRoute: CategoriesCategoryIdRoute,
   CategoriesIndexRoute: CategoriesIndexRoute,
+  GamesIndexRoute: GamesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

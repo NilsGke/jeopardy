@@ -22,7 +22,7 @@ function App() {
             <div>
               <Link to="/categories">Categories</Link>
               <Link to="/">Boards</Link>
-              <Link to="/">Games</Link>
+              <Link to="/games">Games</Link>
             </div>
           </CardContent>
         </Card>

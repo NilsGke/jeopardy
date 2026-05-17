@@ -1,18 +1,16 @@
 import { z } from "zod";
-import { countEntries } from "./utils";
+import { assertPermissions, countEntries } from "./utils";
+import {
+  versionCodec,
+  versionObjectSchema,
+  versionStringSchema,
+} from "@/schemas/version";
 
 export const ROOT_META_FILE_NAME = "jeopardy-meta.json";
 
-export const metaVersionSchema = z
-  .string()
-  .regex(/\d+\.\d+\.\d+/)
-  .transform((version) => {
-    const [major, minor, patch] = version.split(".").map((v) => parseInt(v));
-    return { major, minor, patch };
-  });
-
+// TODO: DO NOT USE FULL SEMANTIC VERSION IN ROOT META SINCE ONLY MAJOR VERSION IS NEEDED
 const jfRootMetaSchema = z.object({
-  version: metaVersionSchema,
+  version: versionStringSchema,
 });
 
 export type JFRootMeta = z.infer<typeof jfRootMetaSchema>;
@@ -20,6 +18,7 @@ export type JFRootMeta = z.infer<typeof jfRootMetaSchema>;
 export const ROOT_META_DEFAULT_CONTENT = jfRootMetaSchema.parse({
   version: __APP_VERSION__,
 } satisfies z.input<typeof jfRootMetaSchema>);
+console.log(ROOT_META_DEFAULT_CONTENT);
 
 export enum DirectoryState {
   EMPTY,
@@ -38,7 +37,7 @@ export const getRootMetaFileAndState = async (
       directoryState:
         | DirectoryState.MAJOR_VERSION_TOO_OLD
         | DirectoryState.MAJOR_VERSION_TOO_NEW;
-      dirVersion: z.infer<typeof metaVersionSchema>;
+      dirVersion: z.infer<typeof versionObjectSchema>;
     }
   | {
       directoryState: Exclude<
@@ -71,14 +70,12 @@ export const getRootMetaFileAndState = async (
   try {
     const metaRawJson = JSON.parse(metaRawText);
 
-    const { version: dirVersion } = jfRootMetaSchema
-      .pick({ version: true })
-      .loose()
-      .parse(metaRawJson);
+    const dirVersion = versionCodec.decode(
+      jfRootMetaSchema.pick({ version: true }).loose().parse(metaRawJson)
+        .version,
+    );
 
-    const { version: appVersion } = jfRootMetaSchema
-      .pick({ version: true })
-      .parse({ version: __APP_VERSION__ });
+    const appVersion = versionCodec.decode(__APP_VERSION__);
 
     if (appVersion.major > dirVersion.major)
       return {
@@ -92,9 +89,38 @@ export const getRootMetaFileAndState = async (
       };
 
     const data = jfRootMetaSchema.parse(metaRawJson);
-    return { directoryState: DirectoryState.VALID, data: data };
+    return { directoryState: DirectoryState.VALID, data };
   } catch (error) {
     console.error(error);
     return { directoryState: DirectoryState.INVALID_META };
   }
+};
+
+/** updates root meta file version */
+export const updateRootMetaFileVersion = async (
+  rootDirHandle: FileSystemDirectoryHandle,
+  newMajorVersion: number,
+) => {
+  const metaFileHandle = await rootDirHandle.getFileHandle(
+    ROOT_META_FILE_NAME,
+    { create: false },
+  );
+  assertPermissions(metaFileHandle, "readwrite");
+  const metaFile = await metaFileHandle.getFile();
+  const currentText = await metaFile.text();
+  const currentJson = JSON.parse(currentText);
+  const current = jfRootMetaSchema.parse(currentJson);
+
+  const newContent = jfRootMetaSchema.parse({
+    ...current,
+    version: versionCodec.encode({
+      major: newMajorVersion,
+      minor: 0,
+      patch: 0,
+    }),
+  });
+
+  const writable = await metaFileHandle.createWritable();
+  await writable.write(JSON.stringify(newContent));
+  await writable.close();
 };

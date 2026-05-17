@@ -1,5 +1,5 @@
 import { Button } from "../ui/button";
-import { tagSchema, type Category, type Tag } from "@/schemas/category";
+import { type Category } from "@/schemas/category";
 import { useState } from "react";
 import {
   Combobox,
@@ -16,6 +16,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getAllCategoryIds, getCategory } from "@/filesystem/category";
 import { toast } from "sonner";
+import { type Tag, tagSchema } from "@/schemas/global";
 
 export default function TagSelector({
   tags,

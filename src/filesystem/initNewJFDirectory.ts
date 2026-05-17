@@ -1,3 +1,4 @@
+import { GAMES_JSON_DEFAULT_CONTENT, GAMES_JSON_FILE_NAME } from "./game";
 import { ROOT_META_DEFAULT_CONTENT, ROOT_META_FILE_NAME } from "./rootMetaFile";
 import { countEntries } from "./utils";
 import { toast } from "sonner";
@@ -9,28 +10,37 @@ export async function initNewJFDirectory(
     throw Error("directory is not empty");
 
   // create files and directories
-  const [metaHandle] = await Promise.all([
+  const [metaHandle, gamesHandle] = await Promise.all([
     directoryHandle.getFileHandle(ROOT_META_FILE_NAME, { create: true }),
+    directoryHandle.getFileHandle(GAMES_JSON_FILE_NAME, { create: true }),
     directoryHandle.getDirectoryHandle("categories", { create: true }),
-    directoryHandle.getDirectoryHandle("boards", { create: true }),
-    directoryHandle.getDirectoryHandle("games", { create: true }),
   ]).catch(async (reason) => {
     // cleanup directory
     await Promise.allSettled([
       directoryHandle.removeEntry(ROOT_META_FILE_NAME),
+      directoryHandle.removeEntry(GAMES_JSON_FILE_NAME),
       directoryHandle.removeEntry("categories"),
-      directoryHandle.removeEntry("boards"),
-      directoryHandle.removeEntry("games"),
     ]);
 
     console.error(reason);
     throw Error("Could not initialize jeopardy directory");
   });
 
-  // write meta file
-  const writable = await metaHandle.createWritable();
-  await writable.write(JSON.stringify(ROOT_META_DEFAULT_CONTENT));
-  await writable.close();
+  await Promise.all([
+    // write meta file
+    (async () => {
+      const metaWritable = await metaHandle.createWritable();
+      await metaWritable.write(JSON.stringify(ROOT_META_DEFAULT_CONTENT));
+      await metaWritable.close();
+    })(),
+
+    // write games json file
+    (async () => {
+      const gamesWritable = await gamesHandle.createWritable();
+      await gamesWritable.write(JSON.stringify(GAMES_JSON_DEFAULT_CONTENT));
+      await gamesWritable.close();
+    })(),
+  ]);
 
   toast.success("Successfully initialized Jeopardy Directory");
 }

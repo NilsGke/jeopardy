@@ -1,8 +1,10 @@
 import { toast } from "sonner";
+import { IGNORE_FILES } from "./ignoreFiles";
 
 export async function countEntries(directoryHandle: FileSystemDirectoryHandle) {
   let count = 0;
-  for await (const _entry of directoryHandle.values()) count++;
+  for await (const entry of directoryHandle.values())
+    if (entry.kind === "directory" || !IGNORE_FILES.has(entry.name)) count++;
   return count;
 }
 

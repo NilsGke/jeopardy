@@ -1,12 +1,10 @@
 import {
   categoryFileSchema,
   categorySchema,
-  type Category,
   type CategoryFile,
 } from "@/schemas/category";
 import { assertPermissions, copyDirectory } from "./utils";
 import { IGNORE_FILES } from "./ignoreFiles";
-import type z from "zod";
 
 const CATEGORY_DIR_NAME = "categories";
 const CATEGORY_META_FILE_NAME = "category-meta.json";

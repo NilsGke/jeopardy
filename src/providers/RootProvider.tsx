@@ -66,6 +66,7 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => getRootMeta(), [rootDir]);
 
+  console.log(rootMetaVersion);
   if (directoryState === DirectoryState.EMPTY)
     return (
       <FullCentered>
@@ -203,7 +204,14 @@ export function RootProvider({ children }: { children: React.ReactNode }) {
             </p>
           </CardContent>
           <CardFooter className="flex gap-3 flex-wrap">
-            <MigrationDialog migration={migration} />
+            {rootDir ? (
+              <MigrationDialog
+                rootDirectoryHandle={rootDir}
+                migration={migration}
+              />
+            ) : (
+              "Root dir is null"
+            )}
 
             <Button variant="secondary" asChild>
               <a

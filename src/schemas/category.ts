@@ -1,11 +1,6 @@
 import z from "zod";
 import { gameFieldSchema } from "./gameField";
-
-const categoryIdSchema = z.string().regex(/^[a-zA-Z0-9 \-]+$/);
-
-export const tagSchema = z.string().toLowerCase().trim().min(1);
-
-export type Tag = z.infer<typeof tagSchema>;
+import { filenameIdSchema, tagSchema } from "./global";
 
 export const categoryFileSchema = z.object({
   tags: z.array(tagSchema),
@@ -14,7 +9,7 @@ export const categoryFileSchema = z.object({
 
 export const categorySchema = z.object({
   ...categoryFileSchema.shape,
-  id: categoryIdSchema,
+  id: filenameIdSchema,
 });
 
 export type CategoryFile = z.infer<typeof categoryFileSchema>;
